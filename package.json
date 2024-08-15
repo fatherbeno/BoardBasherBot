@@ -1,0 +1,25 @@
+{
+  "name": "boardgamebash",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "clean": "del /s /q build",
+    "build": "tsc --build",
+    "dev": "concurrently \"tsc -w\" \"node build/index.js\"",
+    "start": "npm run clean && npm run build && node build/index.js"
+  },
+  "keywords": [],
+  "author": "fatherbeno (Benjamin Gulliver)",
+  "license": "ISC",
+  "description": "",
+  "engines": {
+    "node": "^20.16.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5"
+  }
+}
