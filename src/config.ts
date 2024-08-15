@@ -2,14 +2,17 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const { APP_ID, DISCORD_TOKEN, PUBLIC_KEY } = process.env;
+const { APP_ID, DISCORD_TOKEN, PUBLIC_KEY, GUILD_ID } = process.env;
 
-if (!APP_ID || !DISCORD_TOKEN || !PUBLIC_KEY) {
+if (!APP_ID || !DISCORD_TOKEN || !PUBLIC_KEY || !GUILD_ID) {
   throw new Error("Missing environment variables");
 }
 
-export const config = {
+const config: Record<string, string> = {
   APP_ID,
   DISCORD_TOKEN,
   PUBLIC_KEY,
+  GUILD_ID,
 };
+
+export default config;
