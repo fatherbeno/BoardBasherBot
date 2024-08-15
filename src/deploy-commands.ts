@@ -4,18 +4,14 @@ import { commands } from "./commands/commands";
 
 const commandsData = Object.values(commands).map((command) => command.data);
 
-const rest = new REST({ version: "10" }).setToken(config.DISCORD_TOKEN);
+const rest = new REST({ version: "10" }).setToken(config.BOT_TOKEN);
 
-type DeployCommandsProps = {
-  guildId: string;
-};
-
-export async function deployCommands({ guildId }: DeployCommandsProps) {
+export async function deployCommands() {
   try {
     console.log("Started refreshing application (/) commands.");
     
     await rest.put(
-      Routes.applicationGuildCommands(config.APP_ID, guildId),
+      Routes.applicationGuildCommands(config.APP_ID, config.GUILD_ID),
       {
         body: commandsData,
       }
@@ -26,3 +22,5 @@ export async function deployCommands({ guildId }: DeployCommandsProps) {
     console.error(error);
   }
 }
+
+deployCommands();
