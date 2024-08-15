@@ -1,5 +1,5 @@
 import { ICommandInput } from "../interfaces/ICommandInput";
-import {  SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 
 export const data = new SlashCommandBuilder()
   .setName("ping")
