@@ -1,6 +1,7 @@
 import { ICommandInput } from "../interfaces/ICommandInput";
-import { ChannelType, GuildMember, SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import { validateTextChannel, validateGuildMembers} from "./command-helper";
+import { promises } from "fs";
 
 export const data = new SlashCommandBuilder()
   .setName("getmembers")
@@ -17,11 +18,19 @@ export const execute = async (commandInput: ICommandInput) => {
         return;
     }
     
-    let message: string = '';
+    let userData: string = '';
+    let userRoles: string = '';
     members.forEach((member) => {
-        message += member.displayName
-    })
+        member.roles.cache.forEach((role) => {
+            userRoles += `[id: ${role.id}, name: ${role.name}], `;
+        })
+        userData += `id: ${member.id}, name: ${member.displayName}, roles: {${userRoles}} \n`;
+        userRoles = '';
+    });
     
-    await channel.send(message);
+    const filePath = "./src/generated-files/userdata.txt";
+    await promises.writeFile(filePath, userData);
+    await channel.send({files: [filePath]});
+    
     return commandInput.interaction.reply("Members!!");
 };
