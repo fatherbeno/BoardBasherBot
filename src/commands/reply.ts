@@ -1,6 +1,6 @@
 import { ICommandInput } from "../interfaces/ICommandInput";
 import { SlashCommandBuilder, ChannelType } from "discord.js";
-import {validateTextChannel} from "./command-helper";
+import { validateTextChannel } from "./command-helper";
 
 export const data = new SlashCommandBuilder()
   .setName("reply")

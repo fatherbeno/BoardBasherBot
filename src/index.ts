@@ -1,11 +1,14 @@
 import config from "./config";
-import { Client } from "discord.js";
+import { Client, Partials } from "discord.js";
 import { commands } from "./commands/commands";
 import { deployCommands } from "./deploy-commands";
+import { handleDM } from "./direct-messages/direct-message-handler";
 
 export const client = new Client({ intents: [
     "Guilds", "GuildModeration", "GuildEmojisAndStickers", "GuildMessages", "GuildMembers",
     "DirectMessages", "GuildMessageTyping", "GuildScheduledEvents", "MessageContent"
+], partials: [
+    Partials.Channel, Partials.Message
 ]});
 
 client.once("ready", () => {
@@ -14,6 +17,14 @@ client.once("ready", () => {
 
 client.on("guildCreate", async () => {
     await deployCommands();
+});
+
+client.on("messageCreate",  async (message) => {
+    if (!message) {
+        return;
+    }
+    
+    await handleDM(message);
 });
 
 client.on("interactionCreate", async (interaction) => {
