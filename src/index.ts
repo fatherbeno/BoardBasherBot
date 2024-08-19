@@ -1,8 +1,8 @@
 import config from "./config";
 import { Client, Partials } from "discord.js";
-import { commands } from "./commands/commands";
+import { commands } from "./commands/.commands";
 import { deployCommands } from "./deploy-commands";
-import { handleDM } from "./direct-messages/direct-message-handler";
+import { messageHandlers } from "./messages/.message-handlers";
 
 export const client = new Client({ intents: [
     "Guilds", "GuildModeration", "GuildEmojisAndStickers", "GuildMessages", "GuildMembers",
@@ -24,7 +24,8 @@ client.on("messageCreate",  async (message) => {
         return;
     }
     
-    await handleDM(message);
+    await messageHandlers.dmHandler.handleDM(message)
+    await messageHandlers.replyHandler.handleReply(message);
 });
 
 client.on("interactionCreate", async (interaction) => {
