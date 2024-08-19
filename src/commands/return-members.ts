@@ -1,7 +1,7 @@
 import { ICommandInput } from "../interfaces/ICommandInput";
+import { promises } from "fs";
 import { Collection, GuildMember, SlashCommandBuilder } from "discord.js";
 import { validateTextChannel, validateGuildMembers} from "./command-helper";
-import { promises } from "fs";
 
 const generateCsvFile = async (members: Collection<string, GuildMember>, filePath: string) => {
     
