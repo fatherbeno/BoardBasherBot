@@ -20,6 +20,7 @@
   "dependencies": {
     "discord.js": "^14.15.3",
     "dotenv": "^16.4.5",
+    "google-auth-library": "^9.13.0",
     "google-spreadsheet": "^4.1.2"
   }
 }
