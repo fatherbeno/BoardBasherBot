@@ -9,7 +9,6 @@ const {
   GUILD_ID,
   DIRECT_MESSAGE_CHANNEL,
   GOOGLE_SHEET_ID,
-  GOOGLE_SHEETS_KEY,
 } = process.env;
 
 if (

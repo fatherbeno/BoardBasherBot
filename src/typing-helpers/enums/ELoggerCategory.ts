@@ -3,5 +3,6 @@ export enum ELoggerCategory {
     Command = "COMMAND",
     Message = "MESSAGE",
     GenerateFile = "GENERATE_FILE",
-    Discord = "DISCORD"
+    Discord = "DISCORD",
+    GoogleSheets = "GOOGLE_SHEETS"
 }
