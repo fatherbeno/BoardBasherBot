@@ -1,7 +1,7 @@
-import { ICommandInput } from "../interfaces/ICommandInput";
+import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import { dbData } from '../google-sheet'
-import { TUserRowData } from "../types/TUserRowData";
+import { TUserRowData } from "../typing-helpers/types/TUserRowData";
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
 
 export const data = new SlashCommandBuilder()

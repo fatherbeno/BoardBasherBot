@@ -1,5 +1,5 @@
 import { ChannelType, Collection, GuildMember, TextChannel } from "discord.js";
-import { ICommandInput } from "../interfaces/ICommandInput";
+import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 
 /**
  * Attempts to return a collection of guildmembers (server members).

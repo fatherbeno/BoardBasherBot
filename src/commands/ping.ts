@@ -1,4 +1,4 @@
-import { ICommandInput } from "../interfaces/ICommandInput";
+import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { SlashCommandBuilder } from "discord.js";
 
 export const data = new SlashCommandBuilder()

@@ -1,4 +1,4 @@
-import { ICommandInput } from "../interfaces/ICommandInput";
+import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { promises } from "fs";
 import { Collection, GuildMember, SlashCommandBuilder } from "discord.js";
 import { validateTextChannel, validateGuildMembers} from "./command-helper";

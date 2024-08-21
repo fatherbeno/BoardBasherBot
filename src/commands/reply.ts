@@ -1,5 +1,5 @@
-import { ICommandInput } from "../interfaces/ICommandInput";
-import { SlashCommandBuilder, ChannelType } from "discord.js";
+import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
+import { SlashCommandBuilder } from "discord.js";
 import { validateTextChannel } from "./command-helper";
 
 export const data = new SlashCommandBuilder()
