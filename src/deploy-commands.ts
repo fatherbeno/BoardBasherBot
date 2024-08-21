@@ -1,10 +1,10 @@
 import config from "./config";
 import { REST, Routes } from "discord.js";
 import { commands } from "./commands/.commands";
-import {getLogger} from "./logging-config";
-import {ELoggerCategory} from "./typing-helpers/enums/ELoggerCategory";
+import { getLogger } from "./logging-config";
+import { ELoggerCategory } from "./typing-helpers/enums/ELoggerCategory";
 
-const logger = getLogger(ELoggerCategory.Command);
+const logger = getLogger(ELoggerCategory.Core);
 
 const commandsData = Object.values(commands).map((command) => command.data);
 
