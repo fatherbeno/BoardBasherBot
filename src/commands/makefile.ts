@@ -1,7 +1,6 @@
 import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { SlashCommandBuilder} from "discord.js";
-import { validateTextChannel } from "./command-helper";
-import { promises } from "fs";
+import { createFile, getStringValue, sendFile, sendReply, validateTextChannel } from "./command-helper";
 
 export const data = new SlashCommandBuilder()
   .setName("makefile")
@@ -14,16 +13,12 @@ export const data = new SlashCommandBuilder()
 });
 
 export const execute = async (commandInput: ICommandInput) => {
-  const interaction = commandInput.interaction;
   const channel = await validateTextChannel(commandInput);
   if (!channel) {
     return;
   }
   
-  const filePath = "./src/generated-files/message.txt";
-  
-  // @ts-ignore
-  await promises.writeFile(filePath, interaction.options.getString("message"));
-  await channel.send({files: [filePath]});
-  return commandInput.interaction.reply("payload sent!");
+  await createFile("message.txt", getStringValue(commandInput, "message"));
+  await sendFile(channel);
+  return sendReply(commandInput, "payload sent!");
 };

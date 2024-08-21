@@ -1,9 +1,8 @@
 import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
-import { promises } from "fs";
 import { Collection, GuildMember, SlashCommandBuilder } from "discord.js";
-import { validateTextChannel, validateGuildMembers} from "./command-helper";
+import { validateTextChannel, validateGuildMembers, createFile, sendFile, sendReply } from "./command-helper";
 
-const generateCsvFile = async (members: Collection<string, GuildMember>, filePath: string) => {
+const generateCsvFile = async (members: Collection<string, GuildMember>) => {
     
     let userRoles: string = '';
     let userData: string = members.reduce((acc, member) => {
@@ -16,7 +15,7 @@ const generateCsvFile = async (members: Collection<string, GuildMember>, filePat
         return acc;
     }, "id, name, roles" + "\n");
     
-    await promises.writeFile(filePath, userData);
+    await createFile("userdata.csv", userData);
 }
 
 export const data = new SlashCommandBuilder()
@@ -34,9 +33,7 @@ export const execute = async (commandInput: ICommandInput) => {
         return;
     }
     
-    const filePath = "./src/generated-files/userdata.csv";
-    
-    await generateCsvFile(members, filePath);
-    await channel.send({files: [filePath]});
-    return commandInput.interaction.reply("Members!!");
+    await generateCsvFile(members);
+    await sendFile(channel);
+    return sendReply(commandInput, "Members!!");
 };

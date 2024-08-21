@@ -1,6 +1,6 @@
 import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { SlashCommandBuilder } from "discord.js";
-import { validateTextChannel } from "./command-helper";
+import { getStringValue, sendReply, validateTextChannel } from "./command-helper";
 
 export const data = new SlashCommandBuilder()
   .setName("reply")
@@ -13,7 +13,6 @@ export const data = new SlashCommandBuilder()
   });
 
 export const execute = async (commandInput: ICommandInput) => {
-    const interaction = commandInput.interaction;
     
     // check if command was in normal text chat
     const channel = await validateTextChannel(commandInput);
@@ -22,9 +21,8 @@ export const execute = async (commandInput: ICommandInput) => {
     }
     
     // now we can send message
-    const { user } = interaction;
-    // @ts-ignore
-    const message = interaction.options.getString("message");
+    const { user } = commandInput.interaction;
+    const message = getStringValue(commandInput, "message");
     await channel.send(`Hello ${user}! ${message}.`);
-    return interaction.reply("I successfully replied!")
+    return sendReply(commandInput, "I successfully replied!");
 };
