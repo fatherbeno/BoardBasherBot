@@ -1,5 +1,5 @@
 import { Message, User } from "discord.js";
-import { getChannel, getMentionedUser, getRepliedMessage, isAuthorBot, isChannelCorrectChannel, validateMessageLength } from "./message-helper";
+import { getChannel, getMentionedUser, getRepliedMessage, isAuthorBot, isChannelCorrectChannel, validateMessageLength } from "./.message-helper";
 
 const commandPrefix = "B!r";
 const confirmReplyOperation = (reply: Message): boolean => {

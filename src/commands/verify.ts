@@ -3,7 +3,7 @@ import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import { dbData } from '../google-sheet'
 import { TUserRowData } from "../typing-helpers/types/TUserRowData";
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
-import { getStringValue, sendReply } from "./command-helper";
+import { getStringValue, sendReply } from "./.command-helper";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../typing-helpers/enums/ELoggerCategory";
 

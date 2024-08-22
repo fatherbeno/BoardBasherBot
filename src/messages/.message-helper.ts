@@ -105,9 +105,9 @@ export const isChannelCorrectChannel = (channel: Channel): boolean => {
 }
 
 export const sendMessageToChannel = async (channel: TextChannel, message: string) => {
-    channel.send(message)
+    await channel.send(message)
 }
 
 export const sendMessageToDM = async (user: User, message: string) => {
-    user.send(message);
+    await user.send(message);
 }

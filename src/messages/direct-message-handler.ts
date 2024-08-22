@@ -1,5 +1,5 @@
 import { ChannelType, Message } from "discord.js";
-import { getChannel, isAuthorBot, sendMessageToChannel, sendMessageToDM, validateMessageLength } from "./message-helper";
+import { getChannel, isAuthorBot, sendMessageToChannel, sendMessageToDM, validateMessageLength } from "./.message-helper";
 
 const replyToDMInChannel = async (dm: Message) => {
     const channel = await getChannel(dm.client);

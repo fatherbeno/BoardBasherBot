@@ -1,6 +1,6 @@
 import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { SlashCommandBuilder} from "discord.js";
-import { createFile, getStringValue, sendFile, sendReply, validateTextChannel } from "./command-helper";
+import { createFile, getStringValue, sendFile, sendReply, validateTextChannel } from "./.command-helper";
 
 export const data = new SlashCommandBuilder()
   .setName("makefile")

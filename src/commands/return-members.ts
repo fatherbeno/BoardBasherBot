@@ -1,6 +1,6 @@
 import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { Collection, GuildMember, SlashCommandBuilder } from "discord.js";
-import { validateTextChannel, validateGuildMembers, createFile, sendFile, sendReply } from "./command-helper";
+import { validateTextChannel, validateGuildMembers, createFile, sendFile, sendReply } from "./.command-helper";
 
 const generateCsvFile = async (members: Collection<string, GuildMember>) => {
     
