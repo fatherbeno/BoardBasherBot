@@ -1,5 +1,9 @@
 import { ChannelType, Message } from "discord.js";
 import { getChannel, isAuthorBot, sendMessageToChannel, sendMessageToDM, validateMessageLength } from "./.message-helper";
+import { getLogger } from "../logging-config";
+import { ELoggerCategory } from "../typing-helpers/enums/ELoggerCategory";
+
+const logger = getLogger(ELoggerCategory.DirectMessage);
 
 const replyToDMInChannel = async (dm: Message) => {
     const channel = await getChannel(dm.client);
@@ -21,8 +25,16 @@ export const handleDM = async (dm: Message) => {
         return;
     }
     
-    if (dm.channel.type === ChannelType.DM) {
-        await replyToDMInChannel(dm);
-        await replyToDMInDM(dm);
+    try {
+        if (dm.channel.type === ChannelType.DM) {
+            logger.info("Bot received a Direct Message (DM).");
+            
+            await replyToDMInChannel(dm);
+            await replyToDMInDM(dm);
+            
+            logger.info("Bot successfully handled the DM.");
+        }
+    } catch (error) {
+        logger.error("Failed to handle DM interaction.", error);
     }
 }

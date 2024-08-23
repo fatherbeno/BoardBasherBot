@@ -2,7 +2,8 @@ export enum ELoggerCategory {
     Core = "CORE",
     Command = "COMMAND",
     Message = "MESSAGE",
-    GenerateFile = "GENERATE_FILE",
+    DirectMessage = "DIRECT_MESSAGE",
+    GeneratedFiles = "GENERATED_FILES",
     Discord = "DISCORD",
     GoogleSheets = "GOOGLE_SHEETS"
 }

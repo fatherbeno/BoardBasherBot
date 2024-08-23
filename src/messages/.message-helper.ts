@@ -1,113 +1,158 @@
 import config from "../config";
-import { Channel, ChannelType, Client, Guild, GuildMember, Message, TextChannel, User } from "discord.js";
+import { Channel, ChannelType, Client, Guild, Message, TextChannel, User } from "discord.js";
+import { getLogger } from "../logging-config";
+import { ELoggerCategory } from "../typing-helpers/enums/ELoggerCategory";
 
+const logger = getLogger(ELoggerCategory.Message);
 
+/**
+ * Validates the length of an incoming message and checks if it is too long.
+ *
+ * @param message the incoming message.
+ */
 export const validateMessageLength = (message: Message): boolean => {
-    return message.content.length <= 1900;
-}
-
-export const getChannel = async (client: Client): Promise<TextChannel | null> => {
+    const maxMessageLength = 1900; // need to set up global vars that can be changed
+    const returnVal = message.content.length <= maxMessageLength;
     
-    // attempt to get the channel from channel id
-    const channel = await client?.channels.fetch(config.DIRECT_MESSAGE_CHANNEL);
-    
-    // check if we got the channel that correlates to the correct channel type
-    if (!channel || channel.type !== ChannelType.GuildText) {
-        return null;
+    if (!returnVal) {
+        logger.error(`Incoming message was too long, was longer than ${maxMessageLength} characters.`);
     }
     
-    // return the channel 
+    return returnVal;
+}
+
+/**
+ * Attempts to fetch the DIRECT MESSAGE CHANNEL from the client.
+ *
+ * @param client the input client.
+ */
+export const getChannel = async (client: Client): Promise<TextChannel> => {
+    if (!client?.channels) {
+        throw new Error("Could not get channels from client.");
+    }
+    
+    const channel = await client.channels.fetch(config.DIRECT_MESSAGE_CHANNEL);
+    if (!channel || channel.type !== ChannelType.GuildText) {
+        throw new Error("Could not fetch channel from client, or fetched channel was not a text channel.");
+    }
+    
+    logger.debug("Successfully fetched text channel.");
     return channel;
 }
 
-export const getGuild = async (client: Client): Promise<Guild | null> => {
-    
-    // attempt to get the guild from the guild id
-    const guild = await client?.guilds.fetch(config.GUILD_ID);
-    
-    // check if we got the guild
-    if (!guild) {
-        return null
+/**
+ * Attempts to fetch the specific guild listed in the config from the client.
+ *
+ * @param client the input client.
+ */
+export const getGuild = async (client: Client): Promise<Guild> => {
+    if (!client?.guilds) {
+        throw new Error("Could not get guilds from client.");
     }
     
+    const guild = await client.guilds.fetch(config.GUILD_ID);
+    if (!guild) {
+        throw new Error("Failed to fetch guild from client.");
+    }
+    
+    logger.debug("Successfully fetched guild.");
     return guild;
 }
 
-export const getMemberFromGuild = async (guild: Guild, memberId: string): Promise<GuildMember | null> => {
-    
-    // attempt to get the member from the guild
-    const member = await guild?.members.fetch(memberId)
-    
-    // check if we got the member
-    if (!member) {
-        return null;
+/**
+ * Attempts to return the message that the input message replied to.
+ *
+ * @param message message that was replying to another message.
+ */
+export const getRepliedMessage = async (message: Message): Promise<Message> => {
+    if (!message?.channel) {
+        throw new Error("Could not get channel from message.");
     }
     
-    return member;
-}
-
-export const getRepliedMessage = async (message: Message, channel: TextChannel): Promise<Message | null> => {
+    if (message.channel.type !== ChannelType.GuildText) {
+        throw new Error("Message channel was not a text channel.");
+    }
     
     if (!message?.reference) {
-        return null;
+        throw new Error("Could not get reference from message.");
     }
-    
+
     if (!message.reference?.messageId) {
-        return null;
+        throw new Error("Could not get messageId from reference.");
     }
-    
-    const messageId = message.reference.messageId;
-    if (!messageId) {
-        return null;
-    }
-    
+
     if (!message?.client) {
-        return null;
+        throw new Error("Could not get client from message.");
     }
-    
-    const repliedMessage = await channel.messages.fetch(messageId);
+
+    const messageId = message.reference.messageId;
+    const repliedMessage = await message.channel.messages.fetch(messageId);
     if (!repliedMessage) {
-        return null
+        throw new Error("Failed to fetch message from channel");
     }
-    
+
+    logger.debug("Successfully got replied to message.")
     return repliedMessage;
 }
 
-export const getMentionedUser = (message: Message): (User | null) => {
-    
+/**
+ * Attempts to get the first mentioned user from a message.
+ *
+ * @param message in message to search for mentioned user.
+ */
+export const getMentionedUser = (message: Message): User => {
     if (!message?.mentions) {
-        return null;
+        throw new Error("Could not get mentions from message.");
     }
     
-    if (!message?.mentions?.users) {
-        return null;
-    }
-    
-    const mentionedUsers = message.mentions.users;
+    const mentionedUsers = message.mentions?.users;
     if (!mentionedUsers) {
-        return null;
+        throw new Error("Could not get users from mentions.");
     }
     
     const mentionedUser = message.mentions.users.first();
     if (!mentionedUser) {
-        return null;
+        throw new Error("Could not get first user from mentions.");
     }
     
+    logger.debug("Successfully got mentioned user.")
     return mentionedUser;
 }
 
+/**
+ * Checks if input user is the client.
+ *
+ * @param author input user to check.
+ */
 export const isAuthorBot = (author: User): boolean => {
     return author.id === config.APP_ID;
 }
 
-export const isChannelCorrectChannel = (channel: Channel): boolean => {
+/**
+ * Checks if input channel is the designated bot reply text channel.
+ *
+ * @param channel input channel to check.
+ */
+export const isChannelDirectMessageChannel = (channel: Channel): boolean => {
     return channel.id === config.DIRECT_MESSAGE_CHANNEL;
 }
 
+/**
+ * Sends a message to a channel.
+ *
+ * @param channel channel to send message to.
+ * @param message message to send to channel.
+ */
 export const sendMessageToChannel = async (channel: TextChannel, message: string) => {
     await channel.send(message)
 }
 
+/**
+ * Sends a direct message to a user.
+ *
+ * @param user user to send direct message to.
+ * @param message message to direct message to user.
+ */
 export const sendMessageToDM = async (user: User, message: string) => {
     await user.send(message);
 }

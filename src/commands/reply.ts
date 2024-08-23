@@ -1,6 +1,6 @@
 import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { SlashCommandBuilder } from "discord.js";
-import { getStringValue, sendReply, validateTextChannel } from "./.command-helper";
+import { getStringValue, sendReply, getTextChannel, logCommandError } from "./.command-helper";
 
 export const data = new SlashCommandBuilder()
   .setName("reply")
@@ -13,16 +13,23 @@ export const data = new SlashCommandBuilder()
   });
 
 export const execute = async (commandInput: ICommandInput) => {
-    
-    // check if command was in normal text chat
-    const channel = await validateTextChannel(commandInput);
-    if (!channel) {
-        return;
+    try {
+        // get text channel
+        const channel = await getTextChannel(commandInput);
+
+        // get command user
+        const { user } = commandInput.interaction;
+
+        // get string value from command
+        const message = getStringValue(commandInput, "message");
+
+        // send message to channel
+        await channel.send(`Hello ${user}! ${message}.`);
+
+        // send reply to command
+        return sendReply(commandInput, "I successfully replied!");
+    } catch (error) {
+        // log caught error
+        logCommandError(commandInput, error);
     }
-    
-    // now we can send message
-    const { user } = commandInput.interaction;
-    const message = getStringValue(commandInput, "message");
-    await channel.send(`Hello ${user}! ${message}.`);
-    return sendReply(commandInput, "I successfully replied!");
 };

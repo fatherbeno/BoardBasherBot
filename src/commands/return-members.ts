@@ -1,6 +1,6 @@
 import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { Collection, GuildMember, SlashCommandBuilder } from "discord.js";
-import { validateTextChannel, validateGuildMembers, createFile, sendFile, sendReply } from "./.command-helper";
+import {getTextChannel, getGuildMembers, createFile, sendFile, sendReply, logCommandError} from "./.command-helper";
 
 const generateCsvFile = async (members: Collection<string, GuildMember>) => {
     
@@ -23,17 +23,21 @@ export const data = new SlashCommandBuilder()
   .setDescription("Returns all members on the server!");
 
 export const execute = async (commandInput: ICommandInput) => {
-    const members = await validateGuildMembers(commandInput);
-    if (!members) {
-        return;
+    try {
+        // get all server members
+        const members = await getGuildMembers(commandInput);
+
+        // get text channel
+        const channel = await getTextChannel(commandInput);
+
+        // generate, then send file
+        await generateCsvFile(members);
+        await sendFile(channel);
+
+        // send reply to command
+        return sendReply(commandInput, "Members!!");
+    } catch (error) {
+        // log caught error
+        logCommandError(commandInput, error);
     }
-    
-    const channel = await validateTextChannel(commandInput);
-    if (!channel) {
-        return;
-    }
-    
-    await generateCsvFile(members);
-    await sendFile(channel);
-    return sendReply(commandInput, "Members!!");
 };

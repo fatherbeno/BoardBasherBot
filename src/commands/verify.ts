@@ -9,6 +9,8 @@ import { ELoggerCategory } from "../typing-helpers/enums/ELoggerCategory";
 
 const googleLogger = getLogger(ELoggerCategory.GoogleSheets);
 
+// will refactor this command another time, please do not look rn it is messy as heck
+
 export const data = new SlashCommandBuilder()
   .setName("verify")
   .setDescription("Returns a row of data :)")

@@ -40,7 +40,7 @@ client.on("interactionCreate", async (interaction) => {
     
     const { commandName } = interaction;
     if (commands[commandName as keyof typeof commands]) {
-      commandLogger.info(`User '${interaction.member?.user?.username}' used command /${commandName}.`)
+      commandLogger.info(`User '${interaction.user.username}' used command /${commandName}.`)
       await commands[commandName as keyof typeof commands].execute({interaction: interaction, client: client});
     }
 });
