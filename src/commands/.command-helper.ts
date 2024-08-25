@@ -94,7 +94,7 @@ const generatedFilesFolder: string = "./src/generated-files/"
 /**
  * Will throw an error if the global var filePath is invalid. Call before needing to use the filePath for any reason.
  */
-const validateFilePath = (): boolean => {
+const validateFilePath = (): string => {
     if (!__filePath) {
         throw new Error("filePath is undefined, please call 'createFile' before any other file related functions.");
     }
@@ -104,7 +104,17 @@ const validateFilePath = (): boolean => {
         throw new Error("fileName did not include a valid file extension, please give fileName a valid file extension.")
     }
     
-    return true;
+    return __filePath;
+}
+
+/**
+ * Updates filePath global var and returns a validated filePath string.
+ *
+ * @param fileName name of file.
+ */
+const setFilePath = (fileName: string): string => {
+    __filePath = generatedFilesFolder + fileName;
+    return validateFilePath();
 }
 
 /**
@@ -117,9 +127,8 @@ export const createFile = async (fileName: string, dataToWrite: string) => {
     try {
         fileLogger.debug("Attempting to create file.");
         
-        __filePath = generatedFilesFolder + fileName;
-        validateFilePath();
-        await promises.writeFile(__filePath, dataToWrite);
+        const filePath = setFilePath(fileName);
+        await promises.writeFile(filePath, dataToWrite);
         
         fileLogger.debug("Successfully created file.");
     } catch (error) {
@@ -137,13 +146,7 @@ export const sendFile = async (channel: TextChannel, fileName?: string) => {
     try {
         fileLogger.debug("Attempting to send file to channel.");
         
-        validateFilePath()
-        
-        if (!__filePath) {
-            throw new Error("filePath is undefined, please call 'createFile' before any other file related functions.")
-        }
-        
-        const filePath = !fileName ? __filePath : generatedFilesFolder + fileName;
+        const filePath = !fileName ? validateFilePath() : setFilePath(fileName);
         await channel.send({files: [filePath]})
         
         fileLogger.debug("Successfully sent file to channel.");
