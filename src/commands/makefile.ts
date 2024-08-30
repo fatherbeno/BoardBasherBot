@@ -1,6 +1,7 @@
 import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { SlashCommandBuilder} from "discord.js";
 import { createFile, getStringValue, sendFile, sendReply, getTextChannel, logCommandError } from "./.command-helper";
+
 export const data = new SlashCommandBuilder()
   .setName("makefile")
   .setDescription("Generates a text file")
@@ -24,6 +25,6 @@ export const execute = async (commandInput: ICommandInput) => {
     return sendReply(commandInput, "payload sent!");
   } catch (error) {
     // log caught error
-    logCommandError(commandInput, error);
+    await logCommandError(commandInput, error);
   }
 };

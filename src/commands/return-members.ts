@@ -1,6 +1,6 @@
 import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { Collection, GuildMember, SlashCommandBuilder } from "discord.js";
-import {getTextChannel, getGuildMembers, createFile, sendFile, sendReply, logCommandError} from "./.command-helper";
+import { getTextChannel, getGuildMembers, createFile, sendFile, sendReply, logCommandError } from "./.command-helper";
 
 const generateCsvFile = async (members: Collection<string, GuildMember>) => {
     
@@ -38,6 +38,6 @@ export const execute = async (commandInput: ICommandInput) => {
         return sendReply(commandInput, "Members!!");
     } catch (error) {
         // log caught error
-        logCommandError(commandInput, error);
+        await logCommandError(commandInput, error);
     }
 };

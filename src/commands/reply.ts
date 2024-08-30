@@ -30,6 +30,6 @@ export const execute = async (commandInput: ICommandInput) => {
         return sendReply(commandInput, "I successfully replied!");
     } catch (error) {
         // log caught error
-        logCommandError(commandInput, error);
+        await logCommandError(commandInput, error);
     }
 };

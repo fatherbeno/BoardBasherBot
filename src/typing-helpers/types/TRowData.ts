@@ -1,3 +1,5 @@
+export type TRowData = TUserRowData
+
 export type TUserRowData = {
     id: number;
     name: string;

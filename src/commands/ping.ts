@@ -12,6 +12,6 @@ export const execute = async (commandInput: ICommandInput) => {
     return sendReply(commandInput, "Pong!");
   } catch (error) {
     // log caught error
-    logCommandError(commandInput, error);
+    await logCommandError(commandInput, error);
   }
 };
