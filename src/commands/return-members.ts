@@ -1,6 +1,13 @@
 import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { Collection, GuildMember, SlashCommandBuilder } from "discord.js";
-import { getTextChannel, getGuildMembers, createFile, sendFile, sendReply, logCommandError } from "./.command-helper";
+import {
+    getGuildMembers,
+    createFile,
+    sendFile,
+    sendReply,
+    logCommandError,
+    deferReply
+} from "./.command-helper";
 
 const generateCsvFile = async (members: Collection<string, GuildMember>) => {
     
@@ -24,18 +31,18 @@ export const data = new SlashCommandBuilder()
 
 export const execute = async (commandInput: ICommandInput) => {
     try {
+        // defer the reply as operation may take longer than 3 seconds
+        await deferReply(commandInput);
+        
         // get all server members
         const members = await getGuildMembers(commandInput);
 
-        // get text channel
-        const channel = await getTextChannel(commandInput);
-
         // generate, then send file
         await generateCsvFile(members);
-        await sendFile(channel);
+        await sendFile({recipient: commandInput.interaction.user, message: "Here is the data of the users of the Discord server."});
 
         // send reply to command
-        return sendReply(commandInput, "Members!!");
+        return sendReply(commandInput, "Check your DMs for the file you requested.");
     } catch (error) {
         // log caught error
         await logCommandError(commandInput, error);

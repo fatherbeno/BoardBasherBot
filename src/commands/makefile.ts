@@ -19,7 +19,7 @@ export const execute = async (commandInput: ICommandInput) => {
     
     // generate, then send file to channel
     await createFile("message.txt", getStringValue(commandInput, "message"));
-    await sendFile(channel);
+    await sendFile({recipient: channel});
     
     // send reply to command
     return sendReply(commandInput, "payload sent!");

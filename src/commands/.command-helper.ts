@@ -2,11 +2,12 @@ import { ChannelType, Collection, GuildMember, TextChannel } from "discord.js";
 import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../typing-helpers/enums/ELoggerCategory";
-import { promises } from "fs";
+import { promises, existsSync } from "fs";
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
 import { IUpdateDataInput } from "../typing-helpers/interfaces/IUpdateDataInput";
 import { TRowData } from "../typing-helpers/types/TRowData";
-import { dbData } from "../google-sheet";
+import { getSheet } from "../google-sheet";
+import { IFilePayload } from "../typing-helpers/interfaces/IFilePayload";
 
 /* -------------------- LOGGING STUFF -------------------- */
 
@@ -108,7 +109,7 @@ let __filePath: string | undefined;
 /**
  * Const global var to store file path to generated-files.
  */
-const generatedFilesFolder: string = "./src/generated-files/"
+const generatedFilesFolder: string = "./src/generated-files"
 
 /**
  * Will throw an error if the global var filePath is invalid. Call before needing to use the filePath for any reason.
@@ -132,8 +133,17 @@ const validateFilePath = (): string => {
  * @param fileName name of file.
  */
 const setFilePath = (fileName: string): string => {
-    __filePath = generatedFilesFolder + fileName;
+    __filePath = generatedFilesFolder + "/" + fileName;
     return validateFilePath();
+}
+
+/**
+ * Checks if the a folder exists to create the new file; if it doesn't, it creates the folder.
+ */
+const validateFileFolder = async () => {
+    if (!existsSync(generatedFilesFolder)) {
+        await promises.mkdir(generatedFilesFolder);
+    }
 }
 
 /**
@@ -146,6 +156,7 @@ export const createFile = async (fileName: string, dataToWrite: string) => {
     try {
         fileLogger.debug("Attempting to create file.");
         
+        await validateFileFolder();
         const filePath = setFilePath(fileName);
         await promises.writeFile(filePath, dataToWrite);
         
@@ -158,15 +169,14 @@ export const createFile = async (fileName: string, dataToWrite: string) => {
 /**
  * Attempt to send a file to the specified channel.
  *
- * @param channel channel to send the file to.
- * @param fileName name of file you want to send, leave empty to send last created file.
+ * @param payload IFilePayload to use to send file.
  */
-export const sendFile = async (channel: TextChannel, fileName?: string) => {
+export const sendFile = async (payload: IFilePayload) => {
     try {
         fileLogger.debug("Attempting to send file to channel.");
         
-        const filePath = !fileName ? validateFilePath() : setFilePath(fileName);
-        await channel.send({files: [filePath]}) // need to rework to make ephemeral so that only the user of the command can get the file, or just send it in dm
+        const filePath = !payload.fileName ? validateFilePath() : setFilePath(payload.fileName);
+        await payload.recipient.send({content: payload.message, files: [filePath]});
         
         fileLogger.debug("Successfully sent file to channel.");
     } catch (error) {
@@ -182,7 +192,7 @@ export const sendFile = async (channel: TextChannel, fileName?: string) => {
  * @param filter the callback function used for the filter.
  */
 export const findRow = async (filter: (value: GoogleSpreadsheetRow<TRowData>, index: number, array: GoogleSpreadsheetRow<TRowData>[]) => boolean): Promise<GoogleSpreadsheetRow<TRowData>> => {
-    const data = await dbData();
+    const data = await getSheet();
     const rows = await data.getRows<TRowData>();
     
     googleLogger.debug("Attempting to filter rows for a single result.");
@@ -192,7 +202,7 @@ export const findRow = async (filter: (value: GoogleSpreadsheetRow<TRowData>, in
       throw new Error("Filter did not find a unique row, please try again");
     }
     
-    googleLogger.debug("Successfully filtered rows for a single result.")
+    googleLogger.debug("Successfully filtered rows for a single result.");
     return filteredRows[0];
 }
 
