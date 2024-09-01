@@ -31,7 +31,7 @@ export const data = new SlashCommandBuilder()
 
 export const execute = async (commandInput: ICommandInput) => {
     try {
-        // defer the reply as operation may take longer than 3 seconds
+        // defer the reply as operation may take longer then 3 seconds
         await deferReply(commandInput);
         
         // get all server members
