@@ -31,7 +31,7 @@ export const execute = async (commandInput: ICommandInput) => {
         }) ? "You have successfully been verified!" : "You have not successfully been verified";
     
     // send reply
-    return sendReply(commandInput, reply);
+    return await sendReply(commandInput);
   } catch (error) {
     // log caught error
     await logCommandError(commandInput, error);

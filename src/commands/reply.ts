@@ -27,7 +27,7 @@ export const execute = async (commandInput: ICommandInput) => {
         await channel.send(`Hello ${user}! ${message}.`);
 
         // send reply to command
-        return sendReply(commandInput, "I successfully replied!");
+        return await sendReply(commandInput);
     } catch (error) {
         // log caught error
         await logCommandError(commandInput, error);

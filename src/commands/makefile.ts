@@ -22,7 +22,7 @@ export const execute = async (commandInput: ICommandInput) => {
     await sendFile({recipient: channel});
     
     // send reply to command
-    return sendReply(commandInput, "payload sent!");
+    return await sendReply(commandInput);
   } catch (error) {
     // log caught error
     await logCommandError(commandInput, error);

@@ -1,0 +1,22 @@
+{
+    "makefile": {
+        "replyMessage": "File has now been sent!",
+        "errorMessage": "File has failed to send..."
+    },
+    "ping": {
+        "replyMessage": "Pong v2!",
+        "errorMessage": "Could not Pong... ;("
+    },
+    "reply": {
+        "replyMessage": "Here is your reply good patron :)",
+        "errorMessage": "Your reply has unfortunately failed..."
+    },
+    "getmembers": {
+        "replyMessage": "Please check our DM for a CSV file containing data of every member of the server.",
+        "errorMessage": "I was unable to return the data you requested, please try again later."
+    },
+    "verify": {
+        "replyMessage": "You have been successfully verified!",
+        "errorMessage": "You have NOT been successfully verified, please try again later."
+    }
+}

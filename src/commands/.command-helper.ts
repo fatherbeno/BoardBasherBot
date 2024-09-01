@@ -2,12 +2,13 @@ import { ChannelType, Collection, GuildMember, TextChannel } from "discord.js";
 import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../typing-helpers/enums/ELoggerCategory";
-import { promises, existsSync } from "fs";
+import { promises, existsSync, readFileSync } from "fs";
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
 import { IUpdateDataInput } from "../typing-helpers/interfaces/IUpdateDataInput";
 import { TRowData } from "../typing-helpers/types/TRowData";
 import { getSheet } from "../google-sheet";
 import { IFilePayload } from "../typing-helpers/interfaces/IFilePayload";
+import { CCommandProperties } from "../typing-helpers/classes/CCommandProperties";
 
 /* -------------------- LOGGING STUFF -------------------- */
 
@@ -19,11 +20,23 @@ export const logCommandError = async (commandInput: ICommandInput, error: any) =
     logger.error(`Command ${commandInput.interaction.commandName} has failed to execute.`, error);
     
     if (!commandInput.interaction.replied) {
-        await sendReply(commandInput, "An issue has occured, please try again later.", true);
+        await sendReply(commandInput, true);
     }
 }
 
 /* -------------------- DISCORD SPECIFIC STUFF -------------------- */
+
+/**
+ * Loads command properties from JSON file in runtime, file can be changed and changes will be reflected without rebuilding.
+ *
+ * @param commandInput the command inputs.
+ */
+const getCommandProperties = (commandInput: ICommandInput) => {
+    const commandPropertiesJson = readFileSync("./src/commands/properties/command-properties.json", "utf-8");
+    const commandProperties = JSON.parse(commandPropertiesJson);
+    
+    return commandProperties[commandInput.interaction.commandName as keyof typeof commandProperties] as CCommandProperties;
+}
 
 /**
  * Attempts to return a collection of guildmembers (server members).
@@ -74,15 +87,29 @@ export const getTextChannel = async (commandInput: ICommandInput): Promise<TextC
  * Attempts to send a reply to the user who used a command.
  *
  * @param commandInput the command inputs.
- * @param replyMessage the message to send if the reply is successful.
  * @param error optional param to log an error if true.
  */
-export const sendReply = async (commandInput: ICommandInput, replyMessage: string, error?: boolean) => {
+export const sendReply = async (commandInput: ICommandInput, error: boolean = false) => {
     if (commandInput.interaction.replied) { return }
+    
+    const cmdProperties = getCommandProperties(commandInput);
+    
+    // throw error if command properties were not found and reply was not intended to be an error.
+    if (!cmdProperties && !error) {
+        throw new Error("Unable to get command properties, please make sure there is an entry in the properties file for this command.");
+    }
+    
+    let replyMessage: string;
+    
+    if (!cmdProperties) {
+        replyMessage = "An issue has occured, please try again later."; // needs to be set to global var
+    } else {
+        replyMessage = error ? cmdProperties.errorMessage : cmdProperties.replyMessage;
+    }
     
     const response = commandInput.interaction.deferred ?
         await commandInput.interaction.editReply(replyMessage) :
-        await commandInput.interaction.reply({ content: replyMessage, ephemeral: false });
+        await commandInput.interaction.reply({ content: replyMessage, ephemeral: cmdProperties?.ephemeral });
 
     if (response && !error) logger.info(`Successfully replied to '${commandInput.interaction.user.username}' who used command /${commandInput.interaction.commandName}.`);
     if (response && error) logger.error(`Failed to execute command /${commandInput.interaction.commandName} for user '${commandInput.interaction.user.username}' with error message '${replyMessage}'.`);

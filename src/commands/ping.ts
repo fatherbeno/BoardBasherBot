@@ -9,7 +9,7 @@ export const data = new SlashCommandBuilder()
 export const execute = async (commandInput: ICommandInput) => {
   try {
     // send reply to command
-    return sendReply(commandInput, "Pong!");
+    return await sendReply(commandInput);
   } catch (error) {
     // log caught error
     await logCommandError(commandInput, error);

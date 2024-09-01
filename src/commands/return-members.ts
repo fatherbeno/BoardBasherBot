@@ -42,7 +42,7 @@ export const execute = async (commandInput: ICommandInput) => {
         await sendFile({recipient: commandInput.interaction.user, message: "Here is the data of the users of the Discord server."});
 
         // send reply to command
-        return sendReply(commandInput, "Check your DMs for the file you requested.");
+        return await sendReply(commandInput);
     } catch (error) {
         // log caught error
         await logCommandError(commandInput, error);
