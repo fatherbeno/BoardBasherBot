@@ -177,6 +177,7 @@ export const sendFile = async (payload: IFilePayload) => {
         
         const filePath = !payload.fileName ? validateFilePath() : setFilePath(payload.fileName);
         await payload.recipient.send({content: payload.message, files: [filePath]});
+        await promises.rm(filePath);
         
         fileLogger.debug("Successfully sent file to channel.");
     } catch (error) {
