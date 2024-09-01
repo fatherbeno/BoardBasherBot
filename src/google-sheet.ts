@@ -16,16 +16,27 @@ const serviceAccountAuth = new JWT({
 
 const doc = new GoogleSpreadsheet(config.GOOGLE_SHEET_ID, serviceAccountAuth);
 
+let sheet: GoogleSpreadsheetWorksheet;
+
 /**
  * Attempts to load all the cells from the first sheet on the specific file.
  */
-export const dbData = async (): Promise<GoogleSpreadsheetWorksheet> => {
+const loadData = async (): Promise<GoogleSpreadsheetWorksheet> => {
     logger.debug("Attempting to fetch Google Sheets information.")
     
     await doc.loadInfo();
-    const sheet = doc.sheetsByIndex[0];
+    sheet = doc.sheetsByIndex[0];
     await sheet.loadCells();
     
     logger.debug("Google Sheets information successfully fetched.")
     return sheet;
 }
+
+/**
+ * Returns the loaded sheet from the Google Sheets document.
+ */
+export const getSheet = async (): Promise<GoogleSpreadsheetWorksheet> => {
+    return sheet ? sheet : await loadData();
+}
+
+loadData();
