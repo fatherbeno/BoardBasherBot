@@ -24,11 +24,10 @@ export const execute = async (commandInput: ICommandInput) => {
     });
     
     // update filtered row on the sheet
-    // changes reply message whether update is successful or not
-    const reply = await updateSheet(filteredRow, () => {
-          filteredRow.set("verified", true);
-          filteredRow.set("discordId", commandInput.interaction.user.id);
-        }) ? "You have successfully been verified!" : "You have not successfully been verified";
+    await updateSheet(filteredRow, () => {
+      filteredRow.set("verified", true);
+      filteredRow.set("discordId", commandInput.interaction.user.id);
+    });
     
     // send reply
     return await sendReply(commandInput);

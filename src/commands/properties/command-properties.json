@@ -9,7 +9,8 @@
     },
     "reply": {
         "replyMessage": "Here is your reply good patron :)",
-        "errorMessage": "Your reply has unfortunately failed..."
+        "errorMessage": "Your reply has unfortunately failed...",
+        "ephemeral": true
     },
     "getmembers": {
         "replyMessage": "Please check our DM for a CSV file containing data of every member of the server.",
