@@ -1,13 +1,13 @@
 export class CCommandProperties {
-    constructor(replyMessage: string, errorMessage: string, ephemeral: boolean = false, roles?: string[]) {
+    constructor(replyMessage: string, errorMessage: string, extraMessage: string = "", ephemeral: boolean = false) {
         this.replyMessage = replyMessage;
         this.errorMessage = errorMessage;
+        this.extraMessage = extraMessage;
         this.ephemeral = ephemeral;
-        this.roles = roles;
     }
     
     replyMessage: string;
     errorMessage: string;
+    extraMessage: string;
     ephemeral: boolean;
-    roles?: string[];
 }

@@ -2,7 +2,7 @@ import { ChannelType, Collection, GuildMember, TextChannel } from "discord.js";
 import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../typing-helpers/enums/ELoggerCategory";
-import { promises, existsSync, readFileSync } from "fs";
+import { promises, existsSync, readFileSync, writeFileSync } from "fs";
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
 import { IUpdateDataInput } from "../typing-helpers/interfaces/IUpdateDataInput";
 import { TRowData } from "../typing-helpers/types/TRowData";
@@ -27,15 +27,44 @@ export const logCommandError = async (commandInput: ICommandInput, error: any) =
 /* -------------------- DISCORD SPECIFIC STUFF -------------------- */
 
 /**
+ * File location of the command properties file.
+ */
+const __commandPropertiesJson = "./src/commands/properties/command-properties.json";
+
+const readCommandProperties = () => {
+    const commandPropertiesJson = readFileSync(__commandPropertiesJson, "utf-8");
+    return JSON.parse(commandPropertiesJson);
+}
+
+/**
  * Loads command properties from JSON file in runtime, file can be changed and changes will be reflected without rebuilding.
  *
  * @param commandInput the command inputs.
  */
-const getCommandProperties = (commandInput: ICommandInput) => {
-    const commandPropertiesJson = readFileSync("./src/commands/properties/command-properties.json", "utf-8");
-    const commandProperties = JSON.parse(commandPropertiesJson);
+export const getCommandProperties = (commandInput: ICommandInput) => {
+    const commandProperties = readCommandProperties()
     
     return commandProperties[commandInput.interaction.commandName as keyof typeof commandProperties] as CCommandProperties;
+}
+
+export const setCommandProperties = (commandName: string, property: string, value: string) => {
+    logger.debug(`Attempting to change property: ${property} on command: /${commandName} with value: ${value}.`)
+    
+    const allCommandProperties = readCommandProperties();
+    const commandProperties = allCommandProperties[commandName as keyof typeof allCommandProperties];
+    
+    if (property !== "ephemeral") {
+        (commandProperties[property as keyof typeof commandProperties] as string) = value;
+    } else {
+        (commandProperties[property as keyof typeof commandProperties] as boolean) = JSON.parse(value);
+    }
+    
+    allCommandProperties[commandName as keyof typeof allCommandProperties] = commandProperties;
+    
+    const data = JSON.stringify(allCommandProperties, null, 2);
+    writeFileSync(__commandPropertiesJson, data);
+    
+    logger.debug(`Property: ${property} on command: /${commandName} was successfully change to value: ${value}.`)
 }
 
 /**

@@ -6,7 +6,7 @@ import {
     sendFile,
     sendReply,
     logCommandError,
-    deferReply
+    deferReply, getCommandProperties
 } from "./.command-helper";
 
 const generateCsvFile = async (members: Collection<string, GuildMember>) => {
@@ -39,7 +39,7 @@ export const execute = async (commandInput: ICommandInput) => {
 
         // generate, then send file
         await generateCsvFile(members);
-        await sendFile({recipient: commandInput.interaction.user, message: "Here is the data of the users of the Discord server."});
+        await sendFile({recipient: commandInput.interaction.user, message: getCommandProperties(commandInput).extraMessage});
 
         // send reply to command
         return await sendReply(commandInput);
