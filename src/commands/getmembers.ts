@@ -1,18 +1,9 @@
-import { ICommandInput } from "../typing-helpers/interfaces/ICommandInput";
 import { Collection, GuildMember, SlashCommandBuilder } from "discord.js";
-import {
-    getGuildMembers,
-    createFile,
-    sendFile,
-    sendReply,
-    logCommandError,
-    deferReply, getCommandProperties
-} from "./.command-helper";
+import { CCommandHelper } from "../typing-helpers/classes/CCommandHelper";
 
-const generateCsvFile = async (members: Collection<string, GuildMember>) => {
-    
+const generateCsvFileString = (members: Collection<string, GuildMember>): string => {
     let userRoles: string = '';
-    let userData: string = members.reduce((acc, member) => {
+    return members.reduce((acc, member) => {
         member.roles.cache.forEach((role) => {
             userRoles += `"${role.name}" `;
         })
@@ -21,30 +12,22 @@ const generateCsvFile = async (members: Collection<string, GuildMember>) => {
         userRoles = '';
         return acc;
     }, "id, name, roles" + "\n");
-    
-    await createFile("userdata.csv", userData);
 }
 
 export const data = new SlashCommandBuilder()
-  .setName("getmembers")
-  .setDescription("Returns all members on the server!");
+    .setName("getmembers")
+    .setDescription("Returns all members on the server!");
 
-export const execute = async (commandInput: ICommandInput) => {
-    try {
+export const execute = async (cmdHelper: CCommandHelper) => {
+    await cmdHelper.executeCommand(async () => {
         // defer the reply as operation may take longer then 3 seconds
-        await deferReply(commandInput);
+        await cmdHelper.deferReply();
         
         // get all server members
-        const members = await getGuildMembers(commandInput);
+        const members = await cmdHelper.getGuildMembers();
 
         // generate, then send file
-        await generateCsvFile(members);
-        await sendFile({recipient: commandInput.interaction.user, message: getCommandProperties(commandInput).extraMessage});
-
-        // send reply to command
-        return await sendReply(commandInput);
-    } catch (error) {
-        // log caught error
-        await logCommandError(commandInput, error);
-    }
+        await cmdHelper.createFile("userdata.csv", generateCsvFileString(members));
+        await cmdHelper.sendFile({recipient: cmdHelper.interaction.user, message: cmdHelper.getCommandProperties().extraMessage});
+    });
 };

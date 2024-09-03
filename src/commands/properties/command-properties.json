@@ -20,7 +20,7 @@
   },
   "verify": {
     "replyMessage": "You have been successfully verified!",
-    "errorMessage": "You have NOT been successfully verified, please try again later."
+    "errorMessage": "You have **NOT** been verified, please try again later..."
   },
   "setcmdproperty": {
     "replyMessage": "The command property has now been changed.",
