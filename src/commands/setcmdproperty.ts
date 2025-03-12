@@ -35,7 +35,7 @@ export const data = new SlashCommandBuilder()
             .setName("value")
             .setDescription("What to set the property to.")
             .setRequired(true)
-});
+    });
 
 export const execute = async (cmdHelper: CCommandHelper) => {
     await cmdHelper.executeCommand(async () => {

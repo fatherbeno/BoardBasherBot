@@ -1,6 +1,5 @@
-import {Role, SlashCommandBuilder} from "discord.js";
+import { Role, SlashCommandBuilder } from "discord.js";
 import { CCommandHelper } from "../typing-helpers/classes/CCommandHelper";
-import config from "../config";
 
 export const data = new SlashCommandBuilder()
     .setName("verifyroles")

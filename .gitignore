@@ -5,3 +5,4 @@ generated-files
 .env
 boardbasherbot-googleauth.json
 global-properties.json
+verify-roles.json

@@ -9,7 +9,7 @@ export const data = new SlashCommandBuilder()
             .setName("message")
             .setDescription("This will be the message in the file")
             .setRequired(true);
-});
+    });
 
 export const execute = async (cmdHelper: CCommandHelper) => {
     await cmdHelper.executeCommand(async () => {

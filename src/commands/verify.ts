@@ -9,7 +9,7 @@ export const data = new SlashCommandBuilder()
             .setName("name")
             .setDescription("The name of the person you want to search")
             .setRequired(true)
-})
+    })
 
 export const execute = async (cmdHelper: CCommandHelper) => {
     await cmdHelper.executeCommand(async () => {
