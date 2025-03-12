@@ -5,7 +5,8 @@ import { deployCommands } from "./deploy-commands";
 import { messageHandlers } from "./messages/.message-handlers";
 import { getLogger } from "./logging-config";
 import { ELoggerCategory } from "./typing-helpers/enums/ELoggerCategory";
-import {CCommandHelper} from "./typing-helpers/classes/CCommandHelper";
+import { CCommandHelper } from "./typing-helpers/classes/CCommandHelper";
+import { CMessageHelper } from "./typing-helpers/classes/CMessageHelper";
 
 const logger = getLogger(ELoggerCategory.Core);
 const commandLogger = getLogger(ELoggerCategory.Command);
@@ -30,8 +31,8 @@ client.on("messageCreate",  async (message) => {
         return;
     }
     
-    await messageHandlers.dmHandler.handleDM(message)
-    await messageHandlers.replyHandler.handleReply(message);
+    await messageHandlers.dmHandler.handleDM(new CMessageHelper(message))
+    await messageHandlers.replyHandler.handleReply(new CMessageHelper(message));
 });
 
 client.on("interactionCreate", async (interaction) => {

@@ -1,15 +1,8 @@
-import {Message, User} from "discord.js";
-import {
-    getMentionedUser,
-    getRepliedMessage,
-    isAuthorBot,
-    isChannelDirectMessageChannel,
-    sendMessageToDM,
-    validateMessageLength
-} from "./.message-helper";
+import { Message, User } from "discord.js";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../typing-helpers/enums/ELoggerCategory";
 import { getGlobalProperties} from "../properties/global-properties-helper";
+import { CMessageHelper } from "../typing-helpers/classes/CMessageHelper";
 
 const logger = getLogger(ELoggerCategory.Message);
 const confirmReplyOperation = (reply: Message): boolean => {
@@ -18,50 +11,50 @@ const confirmReplyOperation = (reply: Message): boolean => {
     return prefixIndex === 0;
 }
 
-const validateReplyOperation = async (reply: Message): Promise<null | User> => {
+const validateReplyOperation = async (msgHelper: CMessageHelper): Promise<null | User> => {
     // check operation was sent in correct channel (channel should be set in global var)
-    if (!isChannelDirectMessageChannel(reply.channel)) {
+    if (!msgHelper.isChannelDirectMessageChannel()) {
         throw new Error("Reply operation was attempted in incorrect channel.");
     }
 
     // get replied to message
-    const repliedMessage = await getRepliedMessage(reply);
+    const repliedMessage = await msgHelper.getRepliedMessage();
 
     // check if operation was replying to bot message
-    if (!isAuthorBot(repliedMessage.author)) {
+    if (!msgHelper.isAuthorBot(repliedMessage.author)) {
         throw new Error("Reply operation did not reply to the bot.");
     }
 
     // finally get the first mentioned user
-    return getMentionedUser(repliedMessage);
+    return msgHelper.getMentionedUser(repliedMessage);
 }
 
-const replyToBotDM = async (user: User, reply: Message) => {
-    const content = reply.content;
-    if (!validateMessageLength(reply)) {
+const replyToBotDM = async (user: User, msgHelper: CMessageHelper) => {
+    const { content } = msgHelper.message;
+    if (!msgHelper.isMessageLengthValid()) {
         return;
     }
     const message = content.substring(getGlobalProperties().replyOperationPrefix.length);
-    await sendMessageToDM(user, message);
+    await msgHelper.sendMessageToDM(message, user);
 }
 
-const handleReplyOperation = async (reply: Message) => {
+const handleReplyOperation = async (msgHelper: CMessageHelper) => {
     try {
-        logger.info(`User '${reply.author.username}' used the reply operation to reply to a Bot Direct Message (DM).`)
+        logger.info(`User '${msgHelper.message.author.username}' used the reply operation to reply to a Bot Direct Message (DM).`)
 
-        const userToReplyTo = await validateReplyOperation(reply)
+        const userToReplyTo = await validateReplyOperation(msgHelper)
         if (userToReplyTo) {
-            await replyToBotDM(userToReplyTo, reply);
+            await replyToBotDM(userToReplyTo, msgHelper);
         }
 
-        logger.info(`Successfully sent the reply that user '${reply.author.username}' issued.`);
+        logger.info(`Successfully sent the reply that user '${msgHelper.message.author.username}' issued.`);
     } catch (error) {
         logger.error("Failed to complete reply operation.", error);
     }
 }
 
-export const handleReply = async (reply: Message) => {
-    if (confirmReplyOperation(reply)) {
-       await handleReplyOperation(reply);
+export const handleReply = async (msgHelper: CMessageHelper) => {
+    if (confirmReplyOperation(msgHelper.message)) {
+       await handleReplyOperation(msgHelper);
     }
 }

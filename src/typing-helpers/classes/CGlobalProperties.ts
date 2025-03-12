@@ -1,4 +1,4 @@
-import {Channel, Guild, TextChannel} from "discord.js";
+import { Channel } from "discord.js";
 
 export class CGlobalProperties {
     constructor(botReplyChannel?: Channel, replyOperationPrefix?: string, commandErrorMessage?: string) {
