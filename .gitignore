@@ -1,7 +1,7 @@
 node_modules
 build
 generated-files
-properties
 .idea
 .env
 boardbasherbot-googleauth.json
+global-properties.json
