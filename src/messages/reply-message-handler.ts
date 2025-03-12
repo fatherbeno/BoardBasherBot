@@ -6,9 +6,13 @@ import { CMessageHelper } from "../typing-helpers/classes/CMessageHelper";
 
 const logger = getLogger(ELoggerCategory.Message);
 const confirmReplyOperation = (reply: Message): boolean => {
+    try {
     const prefixIndex = reply.content.indexOf(getGlobalProperties().replyOperationPrefix);
-
     return prefixIndex === 0;
+    } catch (error) {
+        logger.error("Global properties file is missing, please make sure it is present.", error);
+        return false;
+    }
 }
 
 const validateReplyOperation = async (msgHelper: CMessageHelper): Promise<null | User> => {

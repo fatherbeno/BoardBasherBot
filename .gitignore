@@ -4,5 +4,4 @@ generated-files
 .idea
 .env
 boardbasherbot-googleauth.json
-global-properties.json
 verify-roles.json
