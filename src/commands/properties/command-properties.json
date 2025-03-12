@@ -26,5 +26,10 @@
     "replyMessage": "The command property has now been changed.",
     "errorMessage": "The command property was not changed, an issue occured. Please try again later.",
     "ephemeral": true
+  },
+  "verifyroles": {
+    "replyMessage": "The verify roles command has succeeded!",
+    "errorMessage": "The verify roles command has failed... Please try again later.",
+    "ephemeral": true
   }
 }

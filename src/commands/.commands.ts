@@ -4,6 +4,7 @@ import * as getmembers from "./getmembers"
 import * as makefile from "./makefile";
 import * as verify from "./verify";
 import * as setcmdproperty from "./setcmdproperty";
+import * as verifyroles from "./verifyroles";
 
 export const commands = {
     ping,
@@ -12,4 +13,5 @@ export const commands = {
     makefile,
     verify,
     setcmdproperty,
+    verifyroles,
 };

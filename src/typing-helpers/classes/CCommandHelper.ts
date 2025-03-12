@@ -1,4 +1,4 @@
-import { ChannelType, Client, Collection, CommandInteraction, GuildMember, TextChannel } from "discord.js";
+import { ChannelType, Client, Collection, CommandInteraction, GuildMember, Role, TextChannel } from "discord.js";
 import { ICommandInput } from "../interfaces/ICommandInput";
 import { getLogger } from "../../logging-config";
 import { ELoggerCategory } from "../enums/ELoggerCategory";
@@ -92,6 +92,43 @@ export class CCommandHelper {
         this.logger.debug(`Property: ${property} on command: /${commandName} was successfully change to value: ${value}.`)
     }
 
+    /**
+     * File location of the verify roles file.
+     */
+    private __verifyRolesJson = "./src/commands/properties/verify-roles.json";
+
+    private readVerifyRoles = () => {
+        const verifyRolesJson = readFileSync(this.__verifyRolesJson, "utf-8");
+        return JSON.parse(verifyRolesJson);
+    }
+
+    /**
+     * Loads verify roles from JSON file in runtime, file can be changed and changes will be reflected without rebuilding.
+     */
+    public getVerifyRoles = async (): Promise<Role[]> => {
+        const verifyRolesJson = this.readVerifyRoles()
+        const verifyRoles = verifyRolesJson as string[]
+
+        let roles: Role[] = []
+
+        for (let roleId of verifyRoles) {
+            roles.push(await this.getRole(roleId))
+        }
+
+        return roles;
+    }
+
+    public setVerifyRoles = (roles: Role[]) => {
+        let roleIds: string[] = [];
+
+        roles.forEach((role) => {
+            roleIds.push(role.id);
+        })
+
+        const fileData = JSON.stringify(roleIds, null, 2);
+        writeFileSync(this.__verifyRolesJson, fileData);
+    }
+
     /* -------------------- DISCORD SPECIFIC STUFF -------------------- */
 
     /**
@@ -120,8 +157,8 @@ export class CCommandHelper {
     /**
      * Attempts to return the text chat that the command was used in. Will only check for normal text chats.
      */
-    public getTextChannel = async (): Promise<TextChannel> => {
-        const channelId = this.interaction?.channelId;
+    public getTextChannel = async (inChannelId: string = ""): Promise<TextChannel> => {
+        const channelId = inChannelId ? inChannelId : this.interaction?.channelId;
         if (!channelId) {
             throw new Error("Could not get channelId from interaction.");
         }
@@ -168,9 +205,52 @@ export class CCommandHelper {
         return response;
     }
 
-    public getStringValue = (valueName: string) => {
+    public getRole = async (roleId: string): Promise<Role> => {
+        this.logger.debug("Attempting to fetch a role through an ID.");
+
+        if (!this.interaction?.guild) {
+            throw new Error("Could not get guild from interaction.");
+        }
+
+        if (!this.interaction.guild?.roles) {
+            throw new Error("Could not get roles from guild.");
+        }
+
+        let role = await this.interaction.guild.roles.fetch(roleId);
+        if (!role) {
+            throw new Error("Failed to fetch role with provided ID.");
+        }
+
+        this.logger.debug("Successfully fetched role.");
+        return role;
+    }
+
+    public getCommandUserMember = async (): Promise<GuildMember> => {
+
+        if (!this.interaction?.guild) {
+            throw new Error("Could not get guild from interaction.");
+        }
+
+        if (!this.interaction.guild?.members) {
+            throw new Error("Could not get members from guild.");
+        }
+
+        const member = await this.interaction.guild.members.fetch(this.interaction.user.id) as GuildMember;
+        if (!member) {
+            throw new Error("Could not fetch member from guild members.")
+        }
+
+        return member;
+    }
+
+    public getStringValue = (valueName: string): string => {
         // @ts-ignore
         return this.interaction.options.getString(valueName);
+    }
+
+    public getRoleValue = (valueName: string): Role => {
+        // @ts-ignore
+        return this.interaction.options.getRole(valueName);
     }
 
     public deferReply = async () => {
@@ -216,7 +296,7 @@ export class CCommandHelper {
     }
 
     /**
-     * Checks if the a folder exists to create the new file; if it doesn't, it creates the folder.
+     * Checks if the folder exists to create the new file; if it doesn't, it creates the folder.
      */
     private validateFileFolder = async () => {
         if (!existsSync(this.generatedFilesFolder)) {
