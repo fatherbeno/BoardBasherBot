@@ -4,9 +4,9 @@
     "errorMessage": "File has failed to send..."
   },
   "ping": {
-    "replyMessage": "Pong v5!",
+    "replyMessage": "Pong v5",
     "errorMessage": "Could not Pong... ;(",
-    "ephemeral": false
+    "ephemeral": true
   },
   "reply": {
     "replyMessage": "Here is your reply good patron :)",
@@ -24,12 +24,13 @@
   },
   "setcmdproperty": {
     "replyMessage": "The command property has now been changed.",
-    "errorMessage": "The command property was not changed, an issue occured. Please try again later.",
+    "errorMessage": "The command property was not changed, an issue occurred. Please try again later.",
     "ephemeral": true
   },
   "verifyroles": {
     "replyMessage": "The verify roles command has succeeded!",
     "errorMessage": "The verify roles command has failed... Please try again later.",
+    "extraMessage": "No roles have been added.",
     "ephemeral": true
   }
 }

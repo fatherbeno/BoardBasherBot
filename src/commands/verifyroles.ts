@@ -73,12 +73,16 @@ const verifyRoleIsPresent = (roles: Role[], role: Role): boolean => {
 }
 
 const viewRoles = async (cmdHelper: CCommandHelper, roles: Role[]) => {
-    let channel = await cmdHelper.getTextChannel();
-    let message: string = "";
+    const channel = await cmdHelper.getTextChannel();
+    let rolesList: string = "";
 
     for (let i = 0; i < roles.length; i++) {
-        message = `${message} ${roles[i]}`;
+        rolesList = `${rolesList} ${roles[i]}`;
     }
+
+    if (!rolesList) { rolesList = cmdHelper.getCommandProperties().extraMessage; }
+
+    const message = `**/verify grants the following roles to the user:** \n${rolesList}`;
 
     await channel.send({content: message});
 }

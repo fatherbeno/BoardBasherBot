@@ -11,7 +11,7 @@ export class CGlobalProperties {
         if (botDMReplyMessage) this.botDMReplyMessage = botDMReplyMessage;
     }
 
-    // Channel that the bot will send messages into.
+    // Channel that the bot will send messages into. (This is set using the /setbotreplychannel command, not using the /setglobalproperty command)
     private __botReplyChannelID: string = "1274158081059590164";
     // Custom prefix for the reply operation.
     public replyOperationPrefix: string = "B!r";
