@@ -6,6 +6,8 @@ import { ELoggerCategory } from "../typing-helpers/enums/ELoggerCategory";
 
 const logger = getLogger(ELoggerCategory.Core)
 
+let __globalPropertiesObject: CGlobalProperties;
+
 /**
  * File location of the global properties file.
  */
@@ -16,13 +18,22 @@ const readGlobalProperties = () => {
     return JSON.parse(globalPropertiesFile);
 }
 
+const assignGlobalProperties = (jsonObject: any) => {
+    Object.keys(jsonObject).forEach((key) => {
+        __globalPropertiesObject[key as keyof typeof __globalPropertiesObject] = jsonObject[key];
+    })
+}
+
 /**
  * Loads global properties from JSON file in runtime, file can be changed and changes will be reflected without rebuilding.
  */
 export const getGlobalProperties = () => {
     const globalPropertiesJson = readGlobalProperties();
 
-    return Object.assign(new CGlobalProperties(), globalPropertiesJson) as CGlobalProperties
+    if (!__globalPropertiesObject) __globalPropertiesObject = Object.assign(new CGlobalProperties(), globalPropertiesJson) as CGlobalProperties;
+    if (__globalPropertiesObject) assignGlobalProperties(globalPropertiesJson);
+
+    return __globalPropertiesObject;
 }
 
 /**

@@ -32,5 +32,10 @@
     "errorMessage": "The verify roles command has failed... Please try again later.",
     "extraMessage": "No roles have been added.",
     "ephemeral": true
+  },
+  "setglobalproperty": {
+    "replyMessage": "The global property has now been changed.",
+    "errorMessage": "The global property was not changed, an issue occurred. Please try again later.",
+    "ephemeral": true
   }
 }
