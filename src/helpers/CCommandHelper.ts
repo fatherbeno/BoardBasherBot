@@ -9,7 +9,7 @@ import { TRowData } from "../types/types/TRowData";
 import { getSheet } from "../google-sheet";
 import { IFilePayload } from "../types/interfaces/IFilePayload";
 import { CCommandProperties } from "../types/classes/CCommandProperties";
-import { getGlobalProperties } from "./global-properties-helper";
+import { GlobalProperties } from "./CGlobalPropertiesHelper";
 
 export class CCommandHelper {
     /* -------------------- CLASS STUFF -------------------- */
@@ -100,7 +100,7 @@ export class CCommandHelper {
         const commandName = inCommandName ? inCommandName : this.interaction.commandName;
         const properties = this.readCommandProperties().get(commandName);
 
-        return properties ? properties : new CCommandProperties("", getGlobalProperties().CommandErrorMessage);
+        return properties ? properties : new CCommandProperties("", GlobalProperties.getProperties().CommandErrorMessage);
     }
 
     /**

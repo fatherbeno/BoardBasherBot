@@ -1,13 +1,13 @@
 import { Message, User } from "discord.js";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
-import { getGlobalProperties} from "../helpers/global-properties-helper";
 import { CMessageHelper } from "../helpers/CMessageHelper";
+import { GlobalProperties } from "../helpers/CGlobalPropertiesHelper";
 
 const logger = getLogger(ELoggerCategory.Message);
 const confirmReplyOperation = (reply: Message): boolean => {
     try {
-    const prefixIndex = reply.content.indexOf(getGlobalProperties().ReplyOperationPrefix);
+    const prefixIndex = reply.content.indexOf(GlobalProperties.getProperties().ReplyOperationPrefix);
     return prefixIndex === 0;
     } catch (error) {
         logger.error("Global properties file is missing, please make sure it is present.", error);
@@ -38,7 +38,7 @@ const replyToBotDM = async (user: User, msgHelper: CMessageHelper) => {
     if (!msgHelper.isMessageLengthValid()) {
         return;
     }
-    const message = content.substring(getGlobalProperties().ReplyOperationPrefix.length);
+    const message = content.substring(GlobalProperties.getProperties().ReplyOperationPrefix.length);
     await msgHelper.sendMessageToDM(message, user);
 }
 

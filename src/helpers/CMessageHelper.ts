@@ -2,7 +2,7 @@ import config from "../config";
 import { Channel, ChannelType, Message, TextChannel, User } from "discord.js";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
-import { getGlobalProperties } from "./global-properties-helper";
+import { GlobalProperties } from "./CGlobalPropertiesHelper";
 
 /**
  * Helper class to assist with anything to do with channel messages. Is constructed with a reference to the initial message.
@@ -36,7 +36,7 @@ export class CMessageHelper {
      * @return True if incoming message is not too long, false if it is.
      */
     public isMessageLengthValid = (): boolean => {
-        const maxMessageLength = getGlobalProperties().MaxBotMessageLength;
+        const maxMessageLength = GlobalProperties.getProperties().MaxBotMessageLength;
         const returnVal = this.message.content.length <= maxMessageLength;
 
         if (!returnVal) {
@@ -57,7 +57,7 @@ export class CMessageHelper {
             throw new Error("Could not get channels from client.");
         }
 
-        const channel = await client.channels.fetch(getGlobalProperties().BotReplyChannel);
+        const channel = await client.channels.fetch(GlobalProperties.getProperties().BotReplyChannel);
         if (!channel || channel.type !== ChannelType.GuildText) {
             throw new Error("Could not fetch channel from client, or fetched channel was not a text channel.");
         }
@@ -144,7 +144,7 @@ export class CMessageHelper {
      */
     public isChannelDirectMessageChannel = (inChannel?: Channel): boolean => {
         let channel = inChannel ? inChannel : this.message.channel;
-        return channel.id === getGlobalProperties().BotDMReplyMessage;
+        return channel.id === GlobalProperties.getProperties().BotDMReplyMessage;
     }
 
     /**

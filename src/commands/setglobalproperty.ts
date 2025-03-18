@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { CCommandHelper } from "../helpers/CCommandHelper";
-import { setGlobalProperties } from "../helpers/global-properties-helper";
+import { GlobalProperties } from "../helpers/CGlobalPropertiesHelper";
 
 export const data = new SlashCommandBuilder()
     .setName("setglobalproperty")
@@ -26,6 +26,6 @@ export const data = new SlashCommandBuilder()
 
 export const execute = async (cmdHelper: CCommandHelper) => {
     await cmdHelper.executeCommand(async () => {
-        setGlobalProperties(cmdHelper.getStringValue("property"), cmdHelper.getStringValue("value"))
+        GlobalProperties.setProperties(cmdHelper.getStringValue("property"), cmdHelper.getStringValue("value"))
     })
 };

@@ -2,7 +2,7 @@ import { ChannelType } from "discord.js";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 import { CMessageHelper } from "../helpers/CMessageHelper";
-import { getGlobalProperties } from "../helpers/global-properties-helper";
+import { GlobalProperties } from "../helpers/CGlobalPropertiesHelper";
 
 const logger = getLogger(ELoggerCategory.DirectMessage);
 
@@ -17,7 +17,7 @@ const replyToDMInChannel = async (msgHelper: CMessageHelper) => {
 }
 
 const replyToDMInDM = async (msgHelper: CMessageHelper) => {
-    const message = getGlobalProperties().BotDMReplyMessage;
+    const message = GlobalProperties.getProperties().BotDMReplyMessage;
     await msgHelper.sendMessageToDM(message);
 }
 
