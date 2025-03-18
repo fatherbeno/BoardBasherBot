@@ -81,50 +81,54 @@ export class CCommandHelper {
     /**
      * File location of the command properties file.
      */
-    private readonly  _commandPropertiesJson = "./src/commands/properties/command-properties.json";
+    private readonly _commandPropertiesJson = "./src/commands/properties/command-properties.json";
 
     /**
-     * Reads command properties file and transforms it to a usable json format.
+     * Reads command properties file and transforms it to a usable map format.
+     * @return A command name, command properties map for every command.
      */
-    private readCommandProperties = () => {
+    private readCommandProperties = (): Map<string, CCommandProperties> => {
         const commandPropertiesJson = readFileSync(this._commandPropertiesJson, "utf-8");
-        return JSON.parse(commandPropertiesJson);
+        return new Map<string, CCommandProperties>(Object.entries(JSON.parse(commandPropertiesJson)));
     }
 
     /**
      * Loads command properties from json file in runtime, file can be changed and changes will be reflected without rebuilding.
+     * @param inCommandName Name of command to get the properties for.
      */
-    public getCommandProperties = () => {
-        const commandProperties = new Map<string, CCommandProperties>(Object.entries(this.readCommandProperties()));
-        const properties = commandProperties.get(this.interaction.commandName);
+    public getCommandProperties = (inCommandName?: string): CCommandProperties => {
+        const commandName = inCommandName ? inCommandName : this.interaction.commandName;
+        const properties = this.readCommandProperties().get(commandName);
 
-        return properties ? properties : new CCommandProperties();
+        return properties ? properties : new CCommandProperties("", getGlobalProperties().CommandErrorMessage);
     }
 
     /**
-     * want to change, code is bad imo
-     * @param commandName
-     * @param property
-     * @param value
+     * Sets a property on a specific command in runtime and saves it to a json file.
+     * @param commandName Name of command to set the property for.
+     * @param property Name of property being set.
+     * @param value Value of the changed property.
      */
     public setCommandProperties = (commandName: string, property: string, value: string) => {
-        this.logger.debug(`Attempting to change property: ${property} on command: /${commandName} with value: ${value}.`)
+        this.logger.debug(`Attempting to change property: ${property} on command: /${commandName} with value: ${value}.`);
 
         const allCommandProperties = this.readCommandProperties();
-        const commandProperties = allCommandProperties[commandName as keyof typeof allCommandProperties];
+        const commandProperty = this.getCommandProperties(commandName);
 
-        if (property !== "ephemeral") {
-            (commandProperties[property as keyof typeof commandProperties] as string) = value;
+        const propertyKey = property as keyof typeof commandProperty;
+
+        if (property !== "Ephemeral") {
+            (commandProperty[propertyKey] as string) = value;
         } else {
-            (commandProperties[property as keyof typeof commandProperties] as boolean) = JSON.parse(value);
+            (commandProperty[propertyKey] as boolean) = JSON.parse(value);
         }
 
-        allCommandProperties[commandName as keyof typeof allCommandProperties] = commandProperties;
+        allCommandProperties.set(commandName, commandProperty);
 
-        const data = JSON.stringify(allCommandProperties, null, 2);
+        const data = JSON.stringify(Object.fromEntries(allCommandProperties), null, 2);
         writeFileSync(this._commandPropertiesJson, data);
 
-        this.logger.debug(`Property: ${property} on command: /${commandName} was successfully change to value: ${value}.`)
+        this.logger.debug(`Property: ${property} on command: /${commandName} was successfully change to value: ${value}.`);
     }
 
     /**
@@ -221,20 +225,7 @@ export class CCommandHelper {
 
         const cmdProperties = this.getCommandProperties();
 
-        // throw error if command properties were not found and the reply was not an error message.
-        if (!cmdProperties && !error) {
-            throw new Error("Unable to get command properties, please make sure there is an entry in the properties file for this command.");
-        }
-
-        let replyMessage: string;
-
-        // if command properties were not found, send an error message using global properties default error message
-        if (!cmdProperties) {
-            replyMessage = getGlobalProperties().CommandErrorMessage;
-            error = true;
-        } else {
-            replyMessage = error ? cmdProperties.ErrorMessage : cmdProperties.ReplyMessage;
-        }
+        let replyMessage = error ? cmdProperties.ErrorMessage : cmdProperties.ReplyMessage;
 
         const response = this.interaction.deferred ?
             await this.interaction.editReply(replyMessage) :

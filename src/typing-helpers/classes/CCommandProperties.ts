@@ -69,7 +69,7 @@ export class CCommandProperties {
     /**
      * Determines whether any messages sent are visible to only the user of the command.
      * @private
-     * @privateRemarks Default is set to true as it is better practise as to not pollute any channels.
+     * @privateRemarks Default is set to true as it is better practice to not pollute any channels.
      */
     private _ephemeral: boolean = true;
 
