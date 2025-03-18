@@ -1,8 +1,8 @@
 import { Message, User } from "discord.js";
 import { getLogger } from "../logging-config";
-import { ELoggerCategory } from "../typing-helpers/enums/ELoggerCategory";
-import { getGlobalProperties} from "../properties/global-properties-helper";
-import { CMessageHelper } from "../typing-helpers/classes/CMessageHelper";
+import { ELoggerCategory } from "../types/enums/ELoggerCategory";
+import { getGlobalProperties} from "../helpers/global-properties-helper";
+import { CMessageHelper } from "../helpers/CMessageHelper";
 
 const logger = getLogger(ELoggerCategory.Message);
 const confirmReplyOperation = (reply: Message): boolean => {

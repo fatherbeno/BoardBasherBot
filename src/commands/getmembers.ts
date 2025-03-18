@@ -1,5 +1,5 @@
 import { Collection, GuildMember, SlashCommandBuilder } from "discord.js";
-import { CCommandHelper } from "../typing-helpers/classes/CCommandHelper";
+import { CCommandHelper } from "../helpers/CCommandHelper";
 
 const generateCsvFileString = (members: Collection<string, GuildMember>): string => {
     let userRoles: string = '';

@@ -1,8 +1,8 @@
-import config from "../../config";
+import config from "../config";
 import { Channel, ChannelType, Message, TextChannel, User } from "discord.js";
-import { getLogger } from "../../logging-config";
-import { ELoggerCategory } from "../../typing-helpers/enums/ELoggerCategory";
-import { getGlobalProperties } from "../../properties/global-properties-helper";
+import { getLogger } from "../logging-config";
+import { ELoggerCategory } from "../types/enums/ELoggerCategory";
+import { getGlobalProperties } from "./global-properties-helper";
 
 /**
  * Helper class to assist with anything to do with channel messages. Is constructed with a reference to the initial message.

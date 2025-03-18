@@ -1,15 +1,15 @@
 import { ChannelType, Client, Collection, CommandInteraction, GuildMember, Role, TextChannel } from "discord.js";
-import { ICommandInput } from "../interfaces/ICommandInput";
-import { getLogger } from "../../logging-config";
-import { ELoggerCategory } from "../enums/ELoggerCategory";
+import { ICommandInput } from "../types/interfaces/ICommandInput";
+import { getLogger } from "../logging-config";
+import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 import { promises, existsSync, readFileSync, writeFileSync } from "fs";
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
-import { IUpdateDataInput } from "../interfaces/IUpdateDataInput";
-import { TRowData } from "../types/TRowData";
-import { getSheet } from "../../google-sheet";
-import { IFilePayload } from "../interfaces/IFilePayload";
-import { CCommandProperties } from "./CCommandProperties";
-import { getGlobalProperties } from "../../properties/global-properties-helper";
+import { IUpdateDataInput } from "../types/interfaces/IUpdateDataInput";
+import { TRowData } from "../types/types/TRowData";
+import { getSheet } from "../google-sheet";
+import { IFilePayload } from "../types/interfaces/IFilePayload";
+import { CCommandProperties } from "../types/classes/CCommandProperties";
+import { getGlobalProperties } from "./global-properties-helper";
 
 export class CCommandHelper {
     /* -------------------- CLASS STUFF -------------------- */

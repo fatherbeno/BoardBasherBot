@@ -1,8 +1,8 @@
 import { readFileSync, writeFileSync } from "fs";
-import { CGlobalProperties } from "../typing-helpers/classes/CGlobalProperties";
+import { CGlobalProperties } from "../types/classes/CGlobalProperties";
 import { Channel } from "discord.js";
 import { getLogger } from "../logging-config";
-import { ELoggerCategory } from "../typing-helpers/enums/ELoggerCategory";
+import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 
 const logger = getLogger(ELoggerCategory.Core)
 

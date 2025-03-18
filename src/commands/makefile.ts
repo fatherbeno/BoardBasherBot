@@ -1,5 +1,5 @@
 import { SlashCommandBuilder} from "discord.js";
-import { CCommandHelper } from "../typing-helpers/classes/CCommandHelper";
+import { CCommandHelper } from "../helpers/CCommandHelper";
 
 export const data = new SlashCommandBuilder()
     .setName("makefile")

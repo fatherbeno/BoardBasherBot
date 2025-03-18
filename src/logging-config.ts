@@ -1,5 +1,5 @@
 import { CategoryProvider, Category } from "typescript-logging-category-style";
-import { ELoggerCategory } from "./typing-helpers/enums/ELoggerCategory";
+import { ELoggerCategory } from "./types/enums/ELoggerCategory";
 import { LogLevel } from "typescript-logging";
 
 const provider = CategoryProvider.createProvider("BoardBasherBot", {

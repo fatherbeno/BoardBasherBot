@@ -1,8 +1,8 @@
 import { ChannelType } from "discord.js";
 import { getLogger } from "../logging-config";
-import { ELoggerCategory } from "../typing-helpers/enums/ELoggerCategory";
-import { CMessageHelper } from "../typing-helpers/classes/CMessageHelper";
-import { getGlobalProperties } from "../properties/global-properties-helper";
+import { ELoggerCategory } from "../types/enums/ELoggerCategory";
+import { CMessageHelper } from "../helpers/CMessageHelper";
+import { getGlobalProperties } from "../helpers/global-properties-helper";
 
 const logger = getLogger(ELoggerCategory.DirectMessage);
 

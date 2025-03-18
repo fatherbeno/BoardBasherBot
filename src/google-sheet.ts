@@ -3,7 +3,7 @@ import * as botsheets from '../boardbasherbot-googleauth.json'
 import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 import { getLogger } from "./logging-config";
-import { ELoggerCategory } from "./typing-helpers/enums/ELoggerCategory";
+import { ELoggerCategory } from "./types/enums/ELoggerCategory";
 
 const logger = getLogger(ELoggerCategory.GoogleSheets);
 

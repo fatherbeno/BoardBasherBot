@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
-import { CCommandHelper } from "../typing-helpers/classes/CCommandHelper";
-import { setGlobalProperties } from "../properties/global-properties-helper";
+import { CCommandHelper } from "../helpers/CCommandHelper";
+import { setGlobalProperties } from "../helpers/global-properties-helper";
 
 export const data = new SlashCommandBuilder()
     .setName("setglobalproperty")
