@@ -1,19 +1,29 @@
 import config from "../../config";
-import { ChannelType, Message, TextChannel, User } from "discord.js";
+import { Channel, ChannelType, Message, TextChannel, User } from "discord.js";
 import { getLogger } from "../../logging-config";
 import { ELoggerCategory } from "../../typing-helpers/enums/ELoggerCategory";
 import { getGlobalProperties } from "../../properties/global-properties-helper";
 
+/**
+ * Helper class to assist with anything to do with channel messages. Is constructed with a reference to the initial message.
+ */
 export class CMessageHelper {
     /* -------------------- CLASS STUFF -------------------- */
 
     constructor(message: Message) {
-        this.__message = message;
+        this._message = message;
     }
 
-    private readonly __message;
+    /**
+     * Received message when class was created.
+     * @private
+     */
+    private readonly _message;
 
-    public get message(): Message { return this.__message }
+    /**
+     * Received message when class was created.
+     */
+    public get message(): Message { return this._message; }
 
     /* -------------------- LOGGING STUFF -------------------- */
 
@@ -23,9 +33,10 @@ export class CMessageHelper {
 
     /**
      * Validates the length of an incoming message and checks if it is too long.
+     * @return True if incoming message is not too long, false if it is.
      */
     public isMessageLengthValid = (): boolean => {
-        const maxMessageLength = getGlobalProperties().maxBotMessageLength;
+        const maxMessageLength = getGlobalProperties().MaxBotMessageLength;
         const returnVal = this.message.content.length <= maxMessageLength;
 
         if (!returnVal) {
@@ -36,7 +47,8 @@ export class CMessageHelper {
     }
 
     /**
-     * Attempts to fetch the DIRECT MESSAGE CHANNEL from the client.
+     * Attempts to fetch the bot reply channel from the client.
+     * @return Successfully fetched bot reply chanel.
      */
     public getDMChannel = async (): Promise<TextChannel> => {
         const client = this.message.client;
@@ -45,7 +57,7 @@ export class CMessageHelper {
             throw new Error("Could not get channels from client.");
         }
 
-        const channel = await client.channels.fetch(getGlobalProperties().botReplyChannel);
+        const channel = await client.channels.fetch(getGlobalProperties().BotReplyChannel);
         if (!channel || channel.type !== ChannelType.GuildText) {
             throw new Error("Could not fetch channel from client, or fetched channel was not a text channel.");
         }
@@ -56,8 +68,7 @@ export class CMessageHelper {
 
     /**
      * Attempts to return the message that the input message replied to.
-     *
-     * @param message message that was replying to another message.
+     * @return Replied to message.
      */
     public getRepliedMessage = async (): Promise<Message> => {
         if (!this.message?.channel) {
@@ -92,8 +103,8 @@ export class CMessageHelper {
 
     /**
      * Attempts to get the first mentioned user from a message.
-     *
-     * @param inMessage in message to search for mentioned user. (defaults to initial message)
+     * @param inMessage Message to search for mentioned user. (defaults to initial message)
+     * @return Mentioned user in message.
      */
     public getMentionedUser = (inMessage?: Message): User => {
         const msgToGetUser = inMessage ? inMessage : this.message
@@ -117,7 +128,9 @@ export class CMessageHelper {
     }
 
     /**
-     * Checks if input user is the client.
+     * Checks if input user is the bot.
+     * @param author User to test if they are the bot.
+     * @return Whether the inputted user is the bot.
      */
     public isAuthorBot = (author?: User): boolean => {
         const authorToTest = author ? author : this.message.author
@@ -126,16 +139,18 @@ export class CMessageHelper {
 
     /**
      * Checks if input channel is the designated bot reply text channel.
+     * @param inChannel Channel to test whether it is the bot reply channel. (defaults to initial message's channel)
+     * @return True or false depending on if the channel is the bot reply channel
      */
-    public isChannelDirectMessageChannel = (): boolean => {
-        return this.message.channel.id === getGlobalProperties().botReplyChannel;
+    public isChannelDirectMessageChannel = (inChannel?: Channel): boolean => {
+        let channel = inChannel ? inChannel : this.message.channel;
+        return channel.id === getGlobalProperties().BotDMReplyMessage;
     }
 
     /**
      * Sends a message to a channel.
-     *
-     * @param channel channel to send message to.
-     * @param inMessage message to send to channel. (defaults to initial message)
+     * @param channel Channel to send message to.
+     * @param inMessage Message to send to channel. (defaults to initial message)
      */
     public sendMessageToChannel = async (channel: TextChannel, inMessage?: string) => {
         const msgToSend = inMessage ? inMessage : this.message.content;
@@ -144,9 +159,8 @@ export class CMessageHelper {
 
     /**
      * Sends a direct message to a user.
-     *
-     * @param user user to send direct message to. (defaults to user who messaged the bot)
-     * @param message message to direct message to user.
+     * @param message Message to dm user.
+     * @param user User to send direct message to. (defaults to initial message's author)
      */
     public sendMessageToDM = async (message: string, user?: User) => {
         const userToDM = user ? user : this.message.author;

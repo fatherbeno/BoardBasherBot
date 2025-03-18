@@ -1,62 +1,126 @@
 import { Channel } from "discord.js";
 
+/**
+ * Class used to translate json global properties data into easily usable data in code.
+ */
 export class CGlobalProperties {
     constructor(botReplyChannelID?: string, replyOperationPrefix?: string,
                 commandErrorMessage?: string, maxBotMessageLength?: string,
                 botDMReplyMessage?: string) {
-        if (botReplyChannelID) this.__botReplyChannelID = botReplyChannelID;
-        if (replyOperationPrefix) this.replyOperationPrefix = replyOperationPrefix;
-        if (commandErrorMessage) this.commandErrorMessage = commandErrorMessage;
-        if (maxBotMessageLength) this.__maxBotMessageLength = +maxBotMessageLength;
-        if (botDMReplyMessage) this.botDMReplyMessage = botDMReplyMessage;
+        if (botReplyChannelID) this.BotReplyChannel = botReplyChannelID;
+        if (replyOperationPrefix) this.ReplyOperationPrefix = replyOperationPrefix;
+        if (commandErrorMessage) this.CommandErrorMessage = commandErrorMessage;
+        if (maxBotMessageLength) this.MaxBotMessageLength = maxBotMessageLength;
+        if (botDMReplyMessage) this.BotDMReplyMessage = botDMReplyMessage;
     }
-
-    // Channel that the bot will send messages into. (This is set using the /setbotreplychannel command, not using the /setglobalproperty command)
-    private __botReplyChannelID: string = "1274158081059590164";
-    // Custom prefix for the reply operation.
-    public replyOperationPrefix: string = "B!r";
-    // Error message for if command doesn't have a command properties entry.
-    public commandErrorMessage: string = "An issue has occurred with this command, please try again later.";
-    // Max message length value when sending a message to or as the bot.
-    private __maxBotMessageLength: number = 1900;
-    // Message to send to user when they DM the bot.
-    public botDMReplyMessage: string = "Thank you for the message, the bot will respond to you soon.";
 
     /**
      * Channel that the bot will send messages into.
-     *
-     * @return An ID that can be used to fetch the channel from the client.
+     * @private
+     * @privateRemarks This is set using the /setbotreplychannel command, not using the /setglobalproperty command.
+     * @privateRemarks Provided id is default channel id if no bot reply channel id property has been set.
      */
-    public get botReplyChannel(): string {
-        return this.__botReplyChannelID;
+    private _botReplyChannelID: string = "1274158081059590164";
+
+    /**
+     * Channel that the bot will send messages into.
+     * @return An id that can be used to fetch the channel from the client.
+     */
+    public get BotReplyChannel(): string { return this._botReplyChannelID; }
+
+    /**
+     * Channel that the bot will send messages into.
+     * @param channel user input channel that then the id is saved.
+     * @privateRemarks This is set using the /setbotreplychannel command, not using the /setglobalproperty command.
+     */
+    public set BotReplyChannel(channel: Channel | string) {
+        if (typeof channel === "string") {
+            this._botReplyChannelID = channel;
+        } else {
+            this._botReplyChannelID = channel.id;
+        }
     }
 
     /**
-     * Channel that the bot will send messages into. (This is set using the /setbotreplychannel command, not using the /setglobalproperty command)
-     *
-     * @param channel user input channel that then the id is saved.
+     * Custom prefix for the reply operation.
+     * @private
+     * @privateRemarks Provided text is default prefix if no reply operation prefix property has been set.
      */
-    public set botReplyChannel(channel: Channel) {
-        this.__botReplyChannelID = channel.id;
-    }
+    private _replyOperationPrefix: string = "B!r";
+
+    /**
+     * Custom prefix for the reply operation.
+     * @return String that contains the reply operation prefix.
+     */
+    public get ReplyOperationPrefix(): string { return this._replyOperationPrefix; }
+
+    /**
+     * Custom prefix for the reply operation.
+     * @param input String that sets the new reply operation prefix.
+     */
+    public set ReplyOperationPrefix(input: string) { this._replyOperationPrefix = input; }
+
+    /**
+     * Error message for if command doesn't have a command properties' entry.
+     * @private
+     * @privateRemarks Provided text is default message if no error message property has been set.
+     */
+    public _commandErrorMessage: string = "An issue has occurred with this command, please try again later.";
+
+    /**
+     * Error message for if command doesn't have a command properties' entry.
+     * @return Global properties' set command error message.
+     */
+    public get CommandErrorMessage(): string { return this._commandErrorMessage; }
+
+    /**
+     * Error message for if command doesn't have a command properties' entry.
+     * @param input Global properties' new command error message.
+     */
+    public set CommandErrorMessage(input: string) { this._commandErrorMessage = input; }
 
     /**
      * Max message length value when sending a message to or as the bot.
+     * @private
+     * @privateRemarks Provided number is default limit if no max bot message length property has been set.
      */
-    public get maxBotMessageLength(): number {
-        return this.__maxBotMessageLength;
-    }
+    private _maxBotMessageLength: number = 1900;
 
     /**
-     * Validates that user input is actually a number, will throw an error if a string in inputted.
-     *
-     * @param input user input when changing this global property
+     * Max message length value when sending a message to or as the bot.
+     * @return Global properties' set max bot message length.
      */
-    public set maxBotMessageLength(input: string) {
+    public get MaxBotMessageLength(): number { return this._maxBotMessageLength; }
+
+    /**
+     * Max message length value when sending a message to or as the bot.
+     * @param input Global properties' new max bot message length.
+     * Validates that user input is actually a number, will throw an error if a string in inputted.
+     */
+    public set MaxBotMessageLength(input: string) {
         const inNumber = +input;
 
         if (!inNumber) throw new Error("Attempted to set maxBotMessageLength to something that wasn't a number.");
 
-        this.__maxBotMessageLength = inNumber;
+        this._maxBotMessageLength = inNumber;
     }
+
+    /**
+     * Message to send to user when they DM the bot.
+     * @private
+     * @privateRemarks Provided text is default message if no bot dm reply message property has been set.
+     */
+    private _botDMReplyMessage: string = "Thank you for the message, the bot will respond to you soon.";
+
+    /**
+     * Message to send to user when they DM the bot.
+     * @return Global properties' set bot dm reply message.
+     */
+    public get BotDMReplyMessage(): string { return this._botDMReplyMessage; }
+
+    /**
+     * Message to send to user when they DM the bot.
+     * @param input Global properties' new bot dm reply message.
+     */
+    public set BotDMReplyMessage(input: string) { this._botDMReplyMessage = input; }
 }

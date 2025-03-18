@@ -48,7 +48,7 @@ export const execute = async (cmdHelper: CCommandHelper) => {
 };
 
 const addRole = (cmdHelper: CCommandHelper, roles: Role[], role: Role) => {
-    if (!verifyRoleIsPresent(roles, role)) {
+    if (!verifyRoleIsPresentInRoles(roles, role)) {
         roles.push(role)
         cmdHelper.setVerifyRoles(roles);
     } else {
@@ -57,7 +57,7 @@ const addRole = (cmdHelper: CCommandHelper, roles: Role[], role: Role) => {
 }
 
 const removeRole = (cmdHelper: CCommandHelper, roles: Role[], role: Role) => {
-    if (verifyRoleIsPresent(roles, role)) {
+    if (verifyRoleIsPresentInRoles(roles, role)) {
         let roleToRemove = roles.indexOf(role);
         if (roleToRemove > 0) roles.splice(roleToRemove, roleToRemove);
         if (roleToRemove === 0) roles.shift();
@@ -67,7 +67,7 @@ const removeRole = (cmdHelper: CCommandHelper, roles: Role[], role: Role) => {
     }
 }
 
-const verifyRoleIsPresent = (roles: Role[], role: Role): boolean => {
+const verifyRoleIsPresentInRoles = (roles: Role[], role: Role): boolean => {
     const roleIndex = roles.indexOf(role);
     return roleIndex >= 0;
 }
@@ -80,9 +80,9 @@ const viewRoles = async (cmdHelper: CCommandHelper, roles: Role[]) => {
         rolesList = `${rolesList} ${roles[i]}`;
     }
 
-    if (!rolesList) { rolesList = cmdHelper.getCommandProperties().extraMessage; }
+    if (!rolesList) { rolesList = cmdHelper.getCommandProperties().ExtraMessage; }
 
-    const message = `**/verify grants the following roles to the user:** \n${rolesList}`;
+    const message = `**/verify grants the following roles to a user:** \n${rolesList}`;
 
     await channel.send({content: message});
 }

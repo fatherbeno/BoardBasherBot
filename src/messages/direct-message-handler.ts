@@ -17,7 +17,7 @@ const replyToDMInChannel = async (msgHelper: CMessageHelper) => {
 }
 
 const replyToDMInDM = async (msgHelper: CMessageHelper) => {
-    const message = getGlobalProperties().botDMReplyMessage;
+    const message = getGlobalProperties().BotDMReplyMessage;
     await msgHelper.sendMessageToDM(message);
 }
 

@@ -1,1 +1,7 @@
-{}
+{
+  "_botReplyChannelID": "1274158081059590164",
+  "replyOperationPrefix": "B!r",
+  "commandErrorMessage": "An issue has occurred with this command, please try again later.",
+  "_maxBotMessageLength": 1800,
+  "botDMReplyMessage": "Thank you for the message, the bot will respond to you soon."
+}

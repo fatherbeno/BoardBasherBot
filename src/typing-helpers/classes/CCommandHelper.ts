@@ -9,21 +9,42 @@ import { TRowData } from "../types/TRowData";
 import { getSheet } from "../../google-sheet";
 import { IFilePayload } from "../interfaces/IFilePayload";
 import { CCommandProperties } from "./CCommandProperties";
+import { getGlobalProperties } from "../../properties/global-properties-helper";
 
 export class CCommandHelper {
     /* -------------------- CLASS STUFF -------------------- */
 
     constructor(commandInput: ICommandInput) {
-        this.__interaction = commandInput.interaction;
-        this.__client = commandInput.client;
+        this._interaction = commandInput.interaction;
+        this._client = commandInput.client;
     }
 
-    private readonly __interaction: CommandInteraction
-    private readonly __client: Client
+    /**
+     * Received command when class was created.
+     * @private
+     */
+    private readonly _interaction: CommandInteraction;
 
-    public get interaction(): CommandInteraction { return this.__interaction }
-    public get client(): Client { return this.__client }
+    /**
+     * Reference to the client. (aka the bot)
+     * @private
+     */
+    private readonly _client: Client;
 
+    /**
+     * Received command when class was created.
+     */
+    public get interaction(): CommandInteraction { return this._interaction; }
+
+    /**
+     * Reference to the client. (aka the bot)
+     */
+    public get client(): Client { return this._client; }
+
+    /**
+     * To be used when you want to execute a command. All cross command functionality is handled while unique command functionality is created within the callback.
+     * @param func Callback function that is executed within this function.
+     */
     public executeCommand = async (func?: () => Promise<void>) => {
         try {
             // code that executes per command
@@ -43,6 +64,10 @@ export class CCommandHelper {
     private readonly fileLogger = getLogger(ELoggerCategory.GeneratedFiles);
     private readonly googleLogger = getLogger(ELoggerCategory.GoogleSheets);
 
+    /**
+     * Logs a command error and then sends an error message to the user.
+     * @param error Error message to be displayed in the logs.
+     */
     public logCommandError = async (error: any) => {
         this.logger.error(`Command ${this.interaction.commandName} has failed to execute.`, error);
 
@@ -56,22 +81,32 @@ export class CCommandHelper {
     /**
      * File location of the command properties file.
      */
-    private readonly  __commandPropertiesJson = "./src/commands/properties/command-properties.json";
+    private readonly  _commandPropertiesJson = "./src/commands/properties/command-properties.json";
 
+    /**
+     * Reads command properties file and transforms it to a usable json format.
+     */
     private readCommandProperties = () => {
-        const commandPropertiesJson = readFileSync(this.__commandPropertiesJson, "utf-8");
+        const commandPropertiesJson = readFileSync(this._commandPropertiesJson, "utf-8");
         return JSON.parse(commandPropertiesJson);
     }
 
     /**
-     * Loads command properties from JSON file in runtime, file can be changed and changes will be reflected without rebuilding.
+     * Loads command properties from json file in runtime, file can be changed and changes will be reflected without rebuilding.
      */
     public getCommandProperties = () => {
-        const commandProperties = this.readCommandProperties()
+        const commandProperties = new Map<string, CCommandProperties>(Object.entries(this.readCommandProperties()));
+        const properties = commandProperties.get(this.interaction.commandName);
 
-        return commandProperties[this.interaction.commandName as keyof typeof commandProperties] as CCommandProperties;
+        return properties ? properties : new CCommandProperties();
     }
 
+    /**
+     * want to change, code is bad imo
+     * @param commandName
+     * @param property
+     * @param value
+     */
     public setCommandProperties = (commandName: string, property: string, value: string) => {
         this.logger.debug(`Attempting to change property: ${property} on command: /${commandName} with value: ${value}.`)
 
@@ -87,7 +122,7 @@ export class CCommandHelper {
         allCommandProperties[commandName as keyof typeof allCommandProperties] = commandProperties;
 
         const data = JSON.stringify(allCommandProperties, null, 2);
-        writeFileSync(this.__commandPropertiesJson, data);
+        writeFileSync(this._commandPropertiesJson, data);
 
         this.logger.debug(`Property: ${property} on command: /${commandName} was successfully change to value: ${value}.`)
     }
@@ -95,15 +130,18 @@ export class CCommandHelper {
     /**
      * File location of the verify roles file.
      */
-    private __verifyRolesJson = "./src/commands/properties/verify-roles.json";
+    private _verifyRolesJson = "./src/commands/properties/verify-roles.json";
 
+    /**
+     * Reads verify roles file and transforms it to a usable json format.
+     */
     private readVerifyRoles = () => {
-        const verifyRolesJson = readFileSync(this.__verifyRolesJson, "utf-8");
+        const verifyRolesJson = readFileSync(this._verifyRolesJson, "utf-8");
         return JSON.parse(verifyRolesJson);
     }
 
     /**
-     * Loads verify roles from JSON file in runtime, file can be changed and changes will be reflected without rebuilding.
+     * Loads verify roles from json file in runtime, file can be changed and changes will be reflected without rebuilding.
      */
     public getVerifyRoles = async (): Promise<Role[]> => {
         const verifyRolesJson = this.readVerifyRoles()
@@ -126,13 +164,14 @@ export class CCommandHelper {
         })
 
         const fileData = JSON.stringify(roleIds, null, 2);
-        writeFileSync(this.__verifyRolesJson, fileData);
+        writeFileSync(this._verifyRolesJson, fileData);
     }
 
     /* -------------------- DISCORD SPECIFIC STUFF -------------------- */
 
     /**
-     * Attempts to return a collection of guildmembers (server members).
+     * Validates and attempts to fetch all users from the guild. (the discord server)
+     * @return A collection of guild members (server members).
      */
     public getGuildMembers = async (): Promise<Collection<string, GuildMember>> => {
         this.logger.debug("Attempting to fetch all guild members.");
@@ -155,10 +194,11 @@ export class CCommandHelper {
     }
 
     /**
-     * Attempts to return the text chat that the command was used in. Will only check for normal text chats.
+     * Validates and attempts to fetch a channel from the guild using a channel id.
+     * @return Text chat that the command was used in. Will only check for normal text chats.
      */
     public getTextChannel = async (inChannelId: string = ""): Promise<TextChannel> => {
-        const channelId = inChannelId ? inChannelId : this.interaction?.channelId;
+        const channelId = inChannelId ? inChannelId : this.interaction.channelId;
         if (!channelId) {
             throw new Error("Could not get channelId from interaction.");
         }
@@ -173,31 +213,32 @@ export class CCommandHelper {
     }
 
     /**
-     * Attempts to send a reply to the user who used a command.
-     *
-     * @param error optional param to log an error if true.
+     * Attempts to send a reply message to the member who used a command.
+     * @param error Optional param to log an error if true.
      */
     public sendReply = async (error: boolean = false) => {
         if (this.interaction.replied) { return }
 
         const cmdProperties = this.getCommandProperties();
 
-        // throw error if command properties were not found and reply was not intended to be an error.
+        // throw error if command properties were not found and the reply was not an error message.
         if (!cmdProperties && !error) {
             throw new Error("Unable to get command properties, please make sure there is an entry in the properties file for this command.");
         }
 
         let replyMessage: string;
 
+        // if command properties were not found, send an error message using global properties default error message
         if (!cmdProperties) {
-            replyMessage = "An issue has occured, please try again later."; // needs to be set to global var
+            replyMessage = getGlobalProperties().CommandErrorMessage;
+            error = true;
         } else {
-            replyMessage = error ? cmdProperties.errorMessage : cmdProperties.replyMessage;
+            replyMessage = error ? cmdProperties.ErrorMessage : cmdProperties.ReplyMessage;
         }
 
         const response = this.interaction.deferred ?
             await this.interaction.editReply(replyMessage) :
-            await this.interaction.reply({ content: replyMessage, ephemeral: cmdProperties?.ephemeral });
+            await this.interaction.reply({ content: replyMessage, ephemeral: cmdProperties.Ephemeral });
 
         if (response && !error) this.logger.info(`Successfully replied to '${this.interaction.user.username}' who used command /${this.interaction.commandName}.`);
         if (response && error) this.logger.error(`Failed to execute command /${this.interaction.commandName} for user '${this.interaction.user.username}' with error message '${replyMessage}'.`);
@@ -205,6 +246,10 @@ export class CCommandHelper {
         return response;
     }
 
+    /**
+     * Validates and attempts to fetch a role from the guild using a role id.
+     * @param roleId Id to use to try and find corresponding guild role.
+     */
     public getRole = async (roleId: string): Promise<Role> => {
         this.logger.debug("Attempting to fetch a role through an ID.");
 
@@ -225,6 +270,10 @@ export class CCommandHelper {
         return role;
     }
 
+    /**
+     * Validates and attempts to fetch a member from the guild who used the command.
+     * @return Guild member who used the command.
+     */
     public getCommandUserMember = async (): Promise<GuildMember> => {
 
         if (!this.interaction?.guild) {
@@ -243,18 +292,29 @@ export class CCommandHelper {
         return member;
     }
 
+    /**
+     * Returns value of addStringOption on command depending on value name.
+     * @param valueName Name used to find data of a value.
+     */
     public getStringValue = (valueName: string): string => {
         // @ts-ignore
         return this.interaction.options.getString(valueName);
     }
 
+    /**
+     * Returns value of addRoleOption on command depending on value name.
+     * @param valueName Name used to find data of a value.
+     */
     public getRoleValue = (valueName: string): Role => {
         // @ts-ignore
         return this.interaction.options.getRole(valueName);
     }
 
+    /**
+     * If a command takes more then 3 seconds to execute, the reply needs to be deferred so it doesn't time out.
+     */
     public deferReply = async () => {
-        await this.interaction.deferReply({ ephemeral: true });
+        await this.interaction.deferReply({ ephemeral: this.getCommandProperties().Ephemeral });
     }
 
     /* -------------------- FILE STUFF -------------------- */
@@ -262,7 +322,7 @@ export class CCommandHelper {
     /**
      * Global var for createFile and sendFile functions.
      */
-    private __filePath: string | undefined;
+    private _filePath: string | undefined;
 
     /**
      * Const global var to store file path to generated-files.
@@ -273,16 +333,16 @@ export class CCommandHelper {
      * Will throw an error if the global var filePath is invalid. Call before needing to use the filePath for any reason.
      */
     private validateFilePath = (): string => {
-        if (!this.__filePath) {
+        if (!this._filePath) {
             throw new Error("filePath is undefined, please call 'createFile' before any other file related functions.");
         }
 
-        const thirdLastLetterIndex = this.__filePath.length - 4;
-        if (this.__filePath[thirdLastLetterIndex] !== '.') {
+        const thirdLastLetterIndex = this._filePath.length - 4;
+        if (this._filePath[thirdLastLetterIndex] !== '.') {
             throw new Error("fileName did not include a valid file extension, please give fileName a valid file extension.");
         }
 
-        return this.__filePath;
+        return this._filePath;
     }
 
     /**
@@ -291,7 +351,7 @@ export class CCommandHelper {
      * @param fileName name of file.
      */
     private setFilePath = (fileName: string): string => {
-        this.__filePath = this.generatedFilesFolder + "/" + fileName;
+        this._filePath = this.generatedFilesFolder + "/" + fileName;
         return this.validateFilePath();
     }
 
@@ -346,9 +406,9 @@ export class CCommandHelper {
     /* -------------------- GOOGLE SHEETS STUFF -------------------- */
 
     /**
-     * Attempts to find a single row on a google sheet using a filter made using a callback function.
-     *
-     * @param filter the callback function used for the filter.
+     * Attempts to find a single row on a Google sheet using a filter made using a callback function.
+     * Throws an error if one single result was not found.
+     * @param filter The callback function used for the filter.
      */
     public findRow = async (filter: (value: GoogleSpreadsheetRow<TRowData>, index: number, array: GoogleSpreadsheetRow<TRowData>[]) => boolean): Promise<GoogleSpreadsheetRow<TRowData>> => {
         const data = await getSheet();
@@ -367,12 +427,10 @@ export class CCommandHelper {
 
     /**
      * Attempts to update the data on a found row using a callback function. Callback function sets the data of the cells and this function saves those changes.
-     *
-     * @param row the found row to save the changes to.
-     * @param func the callback function that is used to update the cells that is then saved.
-     * @param dataInput data input that is used to set the data to save to the cells.
-     *
-     * @return true or false depending if the data was successfully saved or not
+     * @param row The found row to save the changes to.
+     * @param func The callback function that is used to update the cells that is then saved.
+     * @param dataInput Data input that is used to set the data to save to the cells.
+     * @return True or false depending on if the data was successfully saved or not
      */
     public updateSheet = async (row: GoogleSpreadsheetRow, func: (a: IUpdateDataInput<TRowData> | undefined) => void, dataInput?: IUpdateDataInput<TRowData>): Promise<boolean> => {
         try {

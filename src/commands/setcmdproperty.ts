@@ -25,10 +25,10 @@ export const data = new SlashCommandBuilder()
             .setDescription("The property to set.")
             .setRequired(true)
             .addChoices(
-                { name: "reply message", value: "replyMessage" },
-                { name: "error message", value: "errorMessage" },
-                { name: "extra message", value: "extraMessage" },
-                { name: "ephemeral", value: "ephemeral" },
+                { name: "reply message", value: "ReplyMessage" },
+                { name: "error message", value: "ErrorMessage" },
+                { name: "extra message", value: "ExtraMessage" },
+                { name: "ephemeral", value: "Ephemeral" },
             )
     })
     .addStringOption((option) => {

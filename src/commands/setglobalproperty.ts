@@ -11,10 +11,10 @@ export const data = new SlashCommandBuilder()
             .setDescription("The property to set.")
             .setRequired(true)
             .addChoices(
-                { name: "reply operation prefix", value: "replyOperationPrefix" },
-                { name: "command error message", value: "commandErrorMessage" },
-                { name: "max bot message length", value: "maxBotMessageLength" },
-                { name: "bot dm reply message", value: "botDMReplyMessage" },
+                { name: "reply operation prefix", value: "ReplyOperationPrefix" },
+                { name: "command error message", value: "CommandErrorMessage" },
+                { name: "max bot message length", value: "MaxBotMessageLength" },
+                { name: "bot dm reply message", value: "BotDMReplyMessage" },
             )
     })
     .addStringOption((option) => {

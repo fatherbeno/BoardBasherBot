@@ -1,41 +1,41 @@
 {
   "makefile": {
-    "replyMessage": "File has now been sent!",
-    "errorMessage": "File has failed to send..."
+    "ReplyMessage": "File has now been sent!",
+    "ErrorMessage": "File has failed to send..."
   },
   "ping": {
-    "replyMessage": "Pong v5",
-    "errorMessage": "Could not Pong... ;(",
-    "ephemeral": true
+    "ReplyMessage": "Pong v5",
+    "ErrorMessage": "Could not Pong... ;(",
+    "Ephemeral": true
   },
   "reply": {
-    "replyMessage": "Here is your reply good patron :)",
-    "errorMessage": "Your reply has unfortunately failed...",
-    "ephemeral": true
+    "ReplyMessage": "Here is your reply good patron :)",
+    "ErrorMessage": "Your reply has unfortunately failed...",
+    "Ephemeral": true
   },
   "getmembers": {
-    "replyMessage": "Please check our DM for a CSV file containing data of every member of the server.",
-    "errorMessage": "I was unable to return the data you requested, please try again later.",
-    "extraMessage": "Here is the data you requested from the Discord server."
+    "ReplyMessage": "Please check our DM for a CSV file containing data of every member of the server.",
+    "ErrorMessage": "I was unable to return the data you requested, please try again later.",
+    "ExtraMessage": "Here is the data you requested from the Discord server."
   },
   "verify": {
-    "replyMessage": "You have been successfully verified!",
-    "errorMessage": "You have **NOT** been verified, please try again later..."
+    "ReplyMessage": "You have been successfully verified!",
+    "ErrorMessage": "You have **NOT** been verified, please try again later..."
   },
   "setcmdproperty": {
-    "replyMessage": "The command property has now been changed.",
-    "errorMessage": "The command property was not changed, an issue occurred. Please try again later.",
-    "ephemeral": true
+    "ReplyMessage": "The command property has now been changed.",
+    "ErrorMessage": "The command property was not changed, an issue occurred. Please try again later.",
+    "Ephemeral": true
   },
   "verifyroles": {
-    "replyMessage": "The verify roles command has succeeded!",
-    "errorMessage": "The verify roles command has failed... Please try again later.",
-    "extraMessage": "No roles have been added.",
-    "ephemeral": true
+    "ReplyMessage": "The verify roles command has succeeded!",
+    "ErrorMessage": "The verify roles command has failed... Please try again later.",
+    "ExtraMessage": "No roles have been added.",
+    "Ephemeral": true
   },
   "setglobalproperty": {
-    "replyMessage": "The global property has now been changed.",
-    "errorMessage": "The global property was not changed, an issue occurred. Please try again later.",
-    "ephemeral": true
+    "ReplyMessage": "The global property has now been changed.",
+    "ErrorMessage": "The global property was not changed, an issue occurred. Please try again later.",
+    "Ephemeral": true
   }
 }

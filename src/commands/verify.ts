@@ -18,8 +18,9 @@ export const execute = async (cmdHelper: CCommandHelper) => {
 
         // use name input to find a row with a unique, corresponding name
         const name = cmdHelper.getStringValue("name");
-        const filteredRow = await cmdHelper.findRow((elt) => {
-            return elt.get("name") === name;
+        const filteredRow = await cmdHelper.findRow((data) => {
+            //"name" is the title of a column in the sheet
+            return data.get("name") === name;
         });
 
         // get roles to add to user from json file, and throw an error if there are no roles

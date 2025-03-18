@@ -6,21 +6,21 @@ import { ELoggerCategory } from "../typing-helpers/enums/ELoggerCategory";
 
 const logger = getLogger(ELoggerCategory.Core)
 
-let __globalPropertiesObject: CGlobalProperties;
+let _globalPropertiesObject: CGlobalProperties;
 
 /**
  * File location of the global properties file.
  */
-const __globalPropertiesFile = "./src/properties/global-properties.json";
+const _globalPropertiesFile = "./src/properties/global-properties.json";
 
 const readGlobalProperties = () => {
-    const globalPropertiesFile = readFileSync(__globalPropertiesFile, "utf-8");
+    const globalPropertiesFile = readFileSync(_globalPropertiesFile, "utf-8");
     return JSON.parse(globalPropertiesFile);
 }
 
 const assignGlobalProperties = (jsonObject: any) => {
     Object.keys(jsonObject).forEach((key) => {
-        __globalPropertiesObject[key as keyof typeof __globalPropertiesObject] = jsonObject[key];
+        _globalPropertiesObject[key as keyof typeof _globalPropertiesObject] = jsonObject[key];
     })
 }
 
@@ -30,10 +30,10 @@ const assignGlobalProperties = (jsonObject: any) => {
 export const getGlobalProperties = () => {
     const globalPropertiesJson = readGlobalProperties();
 
-    if (!__globalPropertiesObject) __globalPropertiesObject = Object.assign(new CGlobalProperties(), globalPropertiesJson) as CGlobalProperties;
-    if (__globalPropertiesObject) assignGlobalProperties(globalPropertiesJson);
+    if (!_globalPropertiesObject) _globalPropertiesObject = Object.assign(new CGlobalProperties(), globalPropertiesJson) as CGlobalProperties;
+    if (_globalPropertiesObject) assignGlobalProperties(globalPropertiesJson);
 
-    return __globalPropertiesObject;
+    return _globalPropertiesObject;
 }
 
 /**
@@ -50,7 +50,7 @@ export const setGlobalProperties = (property: string, value: string | Channel) =
     globalProperties[property as keyof typeof globalProperties] = value;
 
     const data = JSON.stringify(globalProperties, null, 2);
-    writeFileSync(__globalPropertiesFile, data);
+    writeFileSync(_globalPropertiesFile, data);
 
     logger.debug(`Property: ${property} was successfully change to value: ${value}.`)
 }

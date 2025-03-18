@@ -28,6 +28,6 @@ export const execute = async (cmdHelper: CCommandHelper) => {
 
         // generate, then send file
         await cmdHelper.createFile("userdata.csv", generateCsvFileString(members));
-        await cmdHelper.sendFile({recipient: cmdHelper.interaction.user, message: cmdHelper.getCommandProperties().extraMessage});
+        await cmdHelper.sendFile({recipient: cmdHelper.interaction.user, message: cmdHelper.getCommandProperties().ExtraMessage});
     });
 };
