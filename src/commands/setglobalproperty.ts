@@ -15,6 +15,7 @@ export const data = new SlashCommandBuilder()
                 { name: "command error message", value: "CommandErrorMessage" },
                 { name: "max bot message length", value: "MaxBotMessageLength" },
                 { name: "bot dm reply message", value: "BotDMReplyMessage" },
+                { name: "bot dm fail message", value: "BotDMFailMessage" },
             )
     })
     .addStringOption((option) => {

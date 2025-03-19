@@ -7,12 +7,13 @@ import { Channel } from "discord.js";
 export class CGlobalProperties {
     constructor(botReplyChannelID?: string, replyOperationPrefix?: string,
                 commandErrorMessage?: string, maxBotMessageLength?: string,
-                botDMReplyMessage?: string) {
+                botDMReplyMessage?: string, botDMFailMessage?: string) {
         if (botReplyChannelID) this.BotReplyChannel = botReplyChannelID;
         if (replyOperationPrefix) this.ReplyOperationPrefix = replyOperationPrefix;
         if (commandErrorMessage) this.CommandErrorMessage = commandErrorMessage;
         if (maxBotMessageLength) this.MaxBotMessageLength = maxBotMessageLength;
         if (botDMReplyMessage) this.BotDMReplyMessage = botDMReplyMessage;
+        if (botDMFailMessage) this.BotDMFailMessage = botDMFailMessage;
     }
 
     /**
@@ -31,7 +32,7 @@ export class CGlobalProperties {
 
     /**
      * Channel that the bot will send messages into.
-     * @param channel user input channel that then the id is saved.
+     * @param channel member input channel that then the id is saved.
      * @privateRemarks This is set using the /setbotreplychannel command, not using the /setglobalproperty command.
      */
     public set BotReplyChannel(channel: Channel | string) {
@@ -96,7 +97,7 @@ export class CGlobalProperties {
     /**
      * Max message length value when sending a message to or as the bot.
      * @param input Global properties' new max bot message length.
-     * Validates that user input is actually a number, will throw an error if a string in inputted.
+     * Validates that member input is actually a number, will throw an error if a string in inputted.
      */
     public set MaxBotMessageLength(input: string) {
         const inNumber = +input;
@@ -107,21 +108,40 @@ export class CGlobalProperties {
     }
 
     /**
-     * Message to send to user when they DM the bot.
+     * Message to send to member when they DM the bot.
      * @private
-     * @privateRemarks Provided text is default message if no bot dm reply message property has been set.
+     * @privateRemarks Provided text is default message if no bot DM reply message property has been set.
      */
     private _botDMReplyMessage: string = "Thank you for the message, the bot will respond to you soon.";
 
     /**
-     * Message to send to user when they DM the bot.
-     * @return Global properties' set bot dm reply message.
+     * Message to send to member when they DM the bot.
+     * @return Global properties' set bot DM reply message.
      */
     public get BotDMReplyMessage(): string { return this._botDMReplyMessage; }
 
     /**
-     * Message to send to user when they DM the bot.
-     * @param input Global properties' new bot dm reply message.
+     * Message to send to member when they DM the bot.
+     * @param input Global properties' new bot DM reply message.
      */
     public set BotDMReplyMessage(input: string) { this._botDMReplyMessage = input; }
+
+    /**
+     * Message to send to member when the bot fails to receive the member's DM for some reason.
+     * @private
+     * @privateRemarks Provided text is default message if no bot DM reply message property has been set.
+     */
+    private _botDMFailMessage: string = "Oopsies! It looks like something went wrong and I am not receiving messages at the moment. Please try again later.";
+
+    /**
+     * Message to send to member when the bot fails to receive the member's DM for some reason.
+     * @return Global properties' set bot DM reply message.
+     */
+    public get BotDMFailMessage(): string { return this._botDMFailMessage; }
+
+    /**
+     * Message to send to member when the bot fails to receive the member's DM for some reason.
+     * @param input Global properties' new bot DM reply message.
+     */
+    public set BotDMFailMessage(input: string) { this._botDMFailMessage = input; }
 }

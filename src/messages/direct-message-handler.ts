@@ -49,6 +49,7 @@ export const handleDM = async (msgHelper: CMessageHelper) => {
             logger.info("Bot successfully handled the DM.");
         }
     } catch (error) {
+        await msgHelper.sendMessageToDM(GlobalProperties.getProperties().BotDMFailMessage);
         logger.error("Failed to handle DM interaction.", error);
     }
 }
