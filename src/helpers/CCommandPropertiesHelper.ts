@@ -7,6 +7,7 @@ import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 
 /**
  * Helper class tasked with handling all things command properties.
+ * @author Benjamin Gulliver (fatherbeno)
  */
 class CCommandPropertiesHelper {
 
@@ -31,8 +32,9 @@ class CCommandPropertiesHelper {
     /**
      * Loads command properties file and transforms it to a usable map format.
      * @return A command name/command properties map for every command.
+     * @author Benjamin Gulliver (fatherbeno)
      */
-    private loadProperties = async (): Promise<Map<string, CCommandProperties>> => {
+    private async loadProperties(): Promise<Map<string, CCommandProperties>> {
         const commandPropertiesJson = await FileSystem.readFile(EFileTypeCategory.CommandProperties);
         this._commandProperties = new Map<string, CCommandProperties>(Object.entries(commandPropertiesJson));
         return this._commandProperties;
@@ -41,20 +43,22 @@ class CCommandPropertiesHelper {
     /**
      * Gets command properties from loaded data, file can be changed and changes will be reflected without rebuilding.
      * @param commandName Name of command to get the properties for.
+     * @author Benjamin Gulliver (fatherbeno)
      */
-    public getProperties = (commandName: string): CCommandProperties => {
+    public getProperties(commandName: string): CCommandProperties {
         const commandProperties = this._commandProperties.get(commandName);
 
         return commandProperties ? commandProperties : new CCommandProperties("", GlobalProperties.getProperties().CommandErrorMessage);
     }
 
     /**
-     * Sets a property on a specific command in runtime and saves it to a json file. (also reloads current properties)
+     * Sets a property on a specific command in runtime and saves it to a json file (also reloads current properties).
      * @param commandName Name of command to set the property for.
      * @param property Name of property being set.
      * @param value Value of the changed property.
+     * @author Benjamin Gulliver (fatherbeno)
      */
-    public setProperties = async (commandName: string, property: string, value: string) => {
+    public async setProperties(commandName: string, property: string, value: string) {
         this.logger.debug(`Attempting to change property: ${property} on command: /${commandName} with value: ${value}.`);
 
         const allCommandProperties = await this.loadProperties();

@@ -5,16 +5,43 @@ import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 import { FileSystem } from "./CFileSystemHelper";
 import { EFileTypeCategory } from "../types/enums/EFileTypeCategory";
 
+/**
+ * Helper class tasked with handling all things global properties.
+ * @author Benjamin Gulliver (fatherbeno)
+ */
 class CGlobalPropertiesHelper {
+
+    /* -------------------- CLASS STUFF -------------------- */
 
     constructor() {
         this.loadProperties()
     }
 
-    private logger = getLogger(ELoggerCategory.Core)
-
+    /**
+     * Copy of loaded global properties data.
+     * @private
+     */
     private _globalPropertiesObject: CGlobalProperties = new CGlobalProperties();
 
+    /**
+     * Gets saved global properties data.
+     */
+    public getProperties(): CGlobalProperties {
+        return this._globalPropertiesObject;
+    }
+
+    /* -------------------- LOGGING STUFF -------------------- */
+
+    private logger = getLogger(ELoggerCategory.Core)
+
+    /* -------------------- HELPER SPECIFIC STUFF -------------------- */
+
+    /**
+     * Json object to global properties' mapper. Transforms json into usable global properties without initialising a new class,
+     * @param jsonObject Inputted json data.
+     * @author Benjamin Gulliver (fatherbeno)
+     * @private
+     */
     private assignGlobalProperties(jsonObject: any) {
         Object.keys(jsonObject).forEach((key) => {
             this._globalPropertiesObject[key as keyof typeof this._globalPropertiesObject] = jsonObject[key];
@@ -23,6 +50,7 @@ class CGlobalPropertiesHelper {
 
     /**
      * Loads global properties from JSON file in runtime, file can be changed and changes will be reflected without rebuilding.
+     * @author Benjamin Gulliver (fatherbeno)
      * @private
      */
     private loadProperties() {
@@ -35,16 +63,10 @@ class CGlobalPropertiesHelper {
     }
 
     /**
-     * Gets saved global properties data.
-     */
-    public getProperties(): CGlobalProperties {
-        return this._globalPropertiesObject;
-    }
-
-    /**
      * Sets global properties to JSON file in runtime, does not need to be rebuilt.
      * @param property property to change.
      * @param value value to set changing property to.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public async setProperties(property: string, value: string | Channel) {
         this.logger.debug(`Attempting to change property: ${property} with value: ${value}.`)
@@ -61,4 +83,7 @@ class CGlobalPropertiesHelper {
     }
 }
 
+/**
+ * Copy of loaded global properties' data and system.
+ */
 export const GlobalProperties = new CGlobalPropertiesHelper();

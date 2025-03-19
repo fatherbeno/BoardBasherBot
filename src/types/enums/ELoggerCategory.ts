@@ -1,3 +1,7 @@
+/**
+ * List of categories for different types of loggers.
+ * @author Benjamin Gulliver (fatherbeno)
+ */
 export enum ELoggerCategory {
     Core = "CORE",
     Command = "COMMAND",

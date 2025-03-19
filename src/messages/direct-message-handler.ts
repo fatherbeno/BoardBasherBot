@@ -6,25 +6,38 @@ import { GlobalProperties } from "../helpers/CGlobalPropertiesHelper";
 
 const logger = getLogger(ELoggerCategory.DirectMessage);
 
+/**
+ * When a member dms the bot, the bot will send a message to the designated guild channel with:
+ * - Who sent the dm.
+ * - What the message of the dm was.
+ * @param msgHelper Message helper class generated when message was received.
+ * @author Benjamin Gulliver (fatherbeno)
+ */
 const replyToDMInChannel = async (msgHelper: CMessageHelper) => {
     const channel = await msgHelper.getDMChannel();
-    if (!channel) {
-        return;
-    }
+    if (!channel) { return; }
 
     const replyMessage: string = `${msgHelper.message.author} said to me: \n ${msgHelper.message.content}`;
     await msgHelper.sendMessageToChannel(channel, replyMessage);
 }
 
+/**
+ * When a member dms the bot, the bot will send a designated message back to the user in their dms.
+ * @param msgHelper Message helper class generated when message was received.
+ * @author Benjamin Gulliver (fatherbeno)
+ */
 const replyToDMInDM = async (msgHelper: CMessageHelper) => {
     const message = GlobalProperties.getProperties().BotDMReplyMessage;
     await msgHelper.sendMessageToDM(message);
 }
 
+/**
+ * Handles incoming messages sent directly to the bot.
+ * @param msgHelper Message helper class generated when message was received.
+ * @author Benjamin Gulliver (fatherbeno)
+ */
 export const handleDM = async (msgHelper: CMessageHelper) => {
-    if (msgHelper.isAuthorBot() || !msgHelper.isMessageLengthValid()) {
-        return;
-    }
+    if (msgHelper.isAuthorBot() || !msgHelper.isMessageLengthValid()) { return; }
     
     try {
         if (msgHelper.message.channel.type === ChannelType.DM) {

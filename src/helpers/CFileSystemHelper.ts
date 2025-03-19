@@ -7,6 +7,7 @@ import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 
 /**
  * Helper class that handles loading data from files and saving data to files.
+ * @author Benjamin Gulliver (fatherbeno)
  */
 class CFileSystemHelper {
 
@@ -40,6 +41,10 @@ class CFileSystemHelper {
         ]);
     }
 
+    /**
+     * A handy map containing all required information about each system that requires file assistance.
+     * @private
+     */
     private readonly _filesMap: Map<EFileTypeCategory, IFileInfo>;
 
     private readonly _filesFolder: string = "./src/files"
@@ -57,6 +62,7 @@ class CFileSystemHelper {
     /**
      * Will throw an error if inputted filePath is invalid. Call before needing to use a filePath.
      * @param filePath Filepath that needs to be validated.
+     * @author Benjamin Gulliver (fatherbeno)
      * @private
      */
     private validateFilePath(filePath: string): string {
@@ -77,6 +83,7 @@ class CFileSystemHelper {
     /**
      * Checks if a folder exists to create the new file; if it doesn't, it creates the folder.
      * @param fileFolder Path of file folder to validate.
+     * @author Benjamin Gulliver (fatherbeno)
      * @private
      */
     private async validateFileFolder(fileFolder: string) {
@@ -91,6 +98,7 @@ class CFileSystemHelper {
      * Checks if a file exists to import new data into; if it doesn't, it creates the file.
      * @param filePath Path of file to validate
      * @param fileBase If file is not present, this is the initial data the file will be created with.
+     * @author Benjamin Gulliver (fatherbeno)
      * @private
      */
     private async validateFileExists(filePath: string, fileBase: string) {
@@ -105,6 +113,7 @@ class CFileSystemHelper {
      * A culmination of every validation method, validates 100% whether a file can be written to or read.
      * @param fileType Type of file to be validated.
      * @param inFileName Optional name of file when creating generated files.
+     * @author Benjamin Gulliver (fatherbeno)
      * @private
      */
     private async validateFile(fileType: EFileTypeCategory, inFileName?: string): Promise<string> {
@@ -120,6 +129,7 @@ class CFileSystemHelper {
      * Combines inputted file information and returns a validated filePath string.
      * @param fileInfo Necessary file information used to create the file path.
      * @param inFileName Optional file name used when creating generated files.
+     * @author Benjamin Gulliver (fatherbeno)
      * @private
      */
     private getFilePath(fileInfo: IFileInfo, inFileName?: string): string {
@@ -130,6 +140,7 @@ class CFileSystemHelper {
     /**
      * Fetches a valid file info object and returns its data.
      * @param fileType Type of file information to be fetched.
+     * @author Benjamin Gulliver (fatherbeno)
      * @private
      */
     private getFileInformation(fileType: EFileTypeCategory): IFileInfo {
@@ -139,8 +150,9 @@ class CFileSystemHelper {
 
     /**
      * Attempts to create a file in the generated-files folder. **ONLY FOR COMMANDS THAT GENERATE NEW FILES**
-     * @param fileName Name that will be used when generating file. (must include file extension)
+     * @param fileName Name that will be used when generating file (must include file extension).
      * @param dataToWrite Data that will be written to file when generating.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public async createFile(fileName: string, dataToWrite: string): Promise<string> {
         try {
@@ -161,6 +173,7 @@ class CFileSystemHelper {
     /**
      * Attempts to send a file to the specified channel or member.
      * @param payload IFilePayload to use to send file.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public async sendFile(payload: IFilePayload) {
         try {
@@ -182,6 +195,7 @@ class CFileSystemHelper {
     /**
      * Attempts to read data from a specific file based on the inputted type. Returns read json data.
      * @param fileType Type of file to read from.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public async readFile(fileType: EFileTypeCategory) {
         try {
@@ -199,6 +213,7 @@ class CFileSystemHelper {
      * Attempts to write data to a specific file based on the inputted type.
      * @param fileType Type of file to be written.
      * @param inData Data to write to specific file.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public async writeFile(fileType: EFileTypeCategory, inData: any) {
         try {
@@ -216,4 +231,7 @@ class CFileSystemHelper {
     }
 }
 
+/**
+ * Copy of loaded file system.
+ */
 export const FileSystem = new CFileSystemHelper();

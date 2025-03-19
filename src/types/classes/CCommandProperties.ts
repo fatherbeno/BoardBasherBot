@@ -1,5 +1,6 @@
 /**
  * Class used to translate json command properties data into easily usable data in code.
+ * @author Benjamin Gulliver (fatherbeno)
  */
 export class CCommandProperties {
     constructor(replyMessage?: string, errorMessage?: string, extraMessage?: string, ephemeral?: boolean) {
@@ -19,12 +20,14 @@ export class CCommandProperties {
     /**
      * Message user sees after the command is successfully executed.
      * @return Command's set reply message.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public get ReplyMessage(): string { return this._replyMessage; }
 
     /**
      * Message user sees after the command is successfully executed.
      * @param input Command's new reply message.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public set ReplyMessage(input: string) { this._replyMessage = input; }
 
@@ -38,12 +41,14 @@ export class CCommandProperties {
     /**
      * Message user sees after the command is unsuccessfully executed.
      * @return Command's set error message.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public get ErrorMessage(): string { return this._errorMessage; }
 
     /**
      * Message user sees after the command is unsuccessfully executed.
      * @param input Command's new error message.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public set ErrorMessage(input: string) { this._errorMessage = input; }
 
@@ -57,12 +62,14 @@ export class CCommandProperties {
     /**
      * Message user sees if an additional message is sent when the command is successfully executed.
      * @return Command's set extra message.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public get ExtraMessage(): string { return this._extraMessage; }
 
     /**
      * Message user sees if an additional message is sent when the command is successfully executed.
      * @param input Command's new extra message.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public set ExtraMessage(input: string) { this._extraMessage = input; }
 
@@ -76,12 +83,14 @@ export class CCommandProperties {
     /**
      * Determines whether any messages sent are visible to only the user of the command.
      * @return Whether command is ephemeral or not.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public get Ephemeral(): boolean { return this._ephemeral; }
 
     /**
      * Determines whether any messages sent are visible to only the user of the command.
      * @param input Set whether command is ephemeral or not.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public set Ephemeral(input: boolean) { this._ephemeral = input; }
 }

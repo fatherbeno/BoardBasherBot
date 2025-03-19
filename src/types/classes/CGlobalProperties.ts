@@ -2,6 +2,7 @@ import { Channel } from "discord.js";
 
 /**
  * Class used to translate json global properties data into easily usable data in code.
+ * @author Benjamin Gulliver (fatherbeno)
  */
 export class CGlobalProperties {
     constructor(botReplyChannelID?: string, replyOperationPrefix?: string,

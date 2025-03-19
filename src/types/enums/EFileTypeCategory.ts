@@ -1,5 +1,6 @@
 /**
  * List of categories for the different types of files.
+ * @author Benjamin Gulliver (fatherbeno)
  */
 export enum EFileTypeCategory {
     GeneratedFiles = "GENERATED_FILES",
