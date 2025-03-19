@@ -1,5 +1,6 @@
 import { Role, SlashCommandBuilder } from "discord.js";
 import { CCommandHelper } from "../helpers/CCommandHelper";
+import { CommandProperties } from "../helpers/CCommandPropertiesHelper";
 
 export const data = new SlashCommandBuilder()
     .setName("verifyroles")
@@ -26,14 +27,15 @@ export const execute = async (cmdHelper: CCommandHelper) => {
         let roles = await cmdHelper.getVerifyRoles();
         let role = cmdHelper.getRoleValue("role");
 
+        // depending on operation chosen, different functionality is executed.
         let operation = cmdHelper.getStringValue("operation");
         switch (operation) {
             case "ADD_ROLE": {
-                addRole(cmdHelper, roles, role);
+                await addRole(cmdHelper, roles, role);
                 break;
             }
             case "REMOVE_ROLE": {
-                removeRole(cmdHelper, roles, role);
+                await removeRole(cmdHelper, roles, role);
                 break;
             }
             case "VIEW_ROLES": {
@@ -47,21 +49,21 @@ export const execute = async (cmdHelper: CCommandHelper) => {
     });
 };
 
-const addRole = (cmdHelper: CCommandHelper, roles: Role[], role: Role) => {
+const addRole = async (cmdHelper: CCommandHelper, roles: Role[], role: Role) => {
     if (!verifyRoleIsPresentInRoles(roles, role)) {
         roles.push(role)
-        cmdHelper.setVerifyRoles(roles);
+        await cmdHelper.setVerifyRoles(roles);
     } else {
         throw new Error("Role is already present, no need to add it again.");
     }
 }
 
-const removeRole = (cmdHelper: CCommandHelper, roles: Role[], role: Role) => {
+const removeRole = async (cmdHelper: CCommandHelper, roles: Role[], role: Role) => {
     if (verifyRoleIsPresentInRoles(roles, role)) {
         let roleToRemove = roles.indexOf(role);
         if (roleToRemove > 0) roles.splice(roleToRemove, roleToRemove);
         if (roleToRemove === 0) roles.shift();
-        cmdHelper.setVerifyRoles(roles);
+        await cmdHelper.setVerifyRoles(roles);
     } else {
         throw new Error("Role is not present, no need to try and remove it.");
     }
@@ -80,7 +82,7 @@ const viewRoles = async (cmdHelper: CCommandHelper, roles: Role[]) => {
         rolesList = `${rolesList} ${roles[i]}`;
     }
 
-    if (!rolesList) { rolesList = cmdHelper.getCommandProperties().ExtraMessage; }
+    if (!rolesList) { rolesList = CommandProperties.getProperties(cmdHelper.commandName).ExtraMessage; }
 
     const message = `**/verify grants the following roles to a user:** \n${rolesList}`;
 

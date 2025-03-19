@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { CCommandHelper } from "../helpers/CCommandHelper";
+import { CommandProperties } from "../helpers/CCommandPropertiesHelper";
 
 export const data = new SlashCommandBuilder()
     .setName("setcmdproperty")
@@ -40,6 +41,10 @@ export const data = new SlashCommandBuilder()
 
 export const execute = async (cmdHelper: CCommandHelper) => {
     await cmdHelper.executeCommand(async () => {
-        cmdHelper.setCommandProperties(cmdHelper.getStringValue("command"), cmdHelper.getStringValue("property"), cmdHelper.getStringValue("value"))
+        await CommandProperties.setProperties(
+            cmdHelper.getStringValue("command"),
+            cmdHelper.getStringValue("property"),
+            cmdHelper.getStringValue("value")
+        );
     })
 };

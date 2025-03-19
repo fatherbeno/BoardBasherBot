@@ -2,16 +2,16 @@ import { ChannelType, Client, Collection, CommandInteraction, GuildMember, Role,
 import { ICommandInput } from "../types/interfaces/ICommandInput";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
-import { promises, existsSync, readFileSync, writeFileSync } from "fs";
 import { GoogleSpreadsheetRow } from "google-spreadsheet";
 import { IUpdateDataInput } from "../types/interfaces/IUpdateDataInput";
 import { TRowData } from "../types/types/TRowData";
 import { getSheet } from "../google-sheet";
-import { IFilePayload } from "../types/interfaces/IFilePayload";
-import { CCommandProperties } from "../types/classes/CCommandProperties";
-import { GlobalProperties } from "./CGlobalPropertiesHelper";
+import { FileSystem } from "./CFileSystemHelper";
+import { EFileTypeCategory } from "../types/enums/EFileTypeCategory";
+import { CommandProperties } from "./CCommandPropertiesHelper";
 
 export class CCommandHelper {
+
     /* -------------------- CLASS STUFF -------------------- */
 
     constructor(commandInput: ICommandInput) {
@@ -42,6 +42,11 @@ export class CCommandHelper {
     public get client(): Client { return this._client; }
 
     /**
+     * Reference to the name of the command that was used.
+     */
+    public get commandName(): string { return this.interaction.commandName }
+
+    /**
      * To be used when you want to execute a command. All cross command functionality is handled while unique command functionality is created within the callback.
      * @param func Callback function that is executed within this function.
      */
@@ -61,7 +66,6 @@ export class CCommandHelper {
     /* -------------------- LOGGING STUFF -------------------- */
 
     private readonly logger = getLogger(ELoggerCategory.Command);
-    private readonly fileLogger = getLogger(ELoggerCategory.GeneratedFiles);
     private readonly googleLogger = getLogger(ELoggerCategory.GoogleSheets);
 
     /**
@@ -79,76 +83,10 @@ export class CCommandHelper {
     /* -------------------- INTEGRATION STUFF -------------------- */
 
     /**
-     * File location of the command properties file.
-     */
-    private readonly _commandPropertiesJson = "./src/commands/properties/command-properties.json";
-
-    /**
-     * Reads command properties file and transforms it to a usable map format.
-     * @return A command name, command properties map for every command.
-     */
-    private readCommandProperties = (): Map<string, CCommandProperties> => {
-        const commandPropertiesJson = readFileSync(this._commandPropertiesJson, "utf-8");
-        return new Map<string, CCommandProperties>(Object.entries(JSON.parse(commandPropertiesJson)));
-    }
-
-    /**
-     * Loads command properties from json file in runtime, file can be changed and changes will be reflected without rebuilding.
-     * @param inCommandName Name of command to get the properties for.
-     */
-    public getCommandProperties = (inCommandName?: string): CCommandProperties => {
-        const commandName = inCommandName ? inCommandName : this.interaction.commandName;
-        const properties = this.readCommandProperties().get(commandName);
-
-        return properties ? properties : new CCommandProperties("", GlobalProperties.getProperties().CommandErrorMessage);
-    }
-
-    /**
-     * Sets a property on a specific command in runtime and saves it to a json file.
-     * @param commandName Name of command to set the property for.
-     * @param property Name of property being set.
-     * @param value Value of the changed property.
-     */
-    public setCommandProperties = (commandName: string, property: string, value: string) => {
-        this.logger.debug(`Attempting to change property: ${property} on command: /${commandName} with value: ${value}.`);
-
-        const allCommandProperties = this.readCommandProperties();
-        const commandProperty = this.getCommandProperties(commandName);
-
-        const propertyKey = property as keyof typeof commandProperty;
-
-        if (property !== "Ephemeral") {
-            (commandProperty[propertyKey] as string) = value;
-        } else {
-            (commandProperty[propertyKey] as boolean) = JSON.parse(value);
-        }
-
-        allCommandProperties.set(commandName, commandProperty);
-
-        const data = JSON.stringify(Object.fromEntries(allCommandProperties), null, 2);
-        writeFileSync(this._commandPropertiesJson, data);
-
-        this.logger.debug(`Property: ${property} on command: /${commandName} was successfully change to value: ${value}.`);
-    }
-
-    /**
-     * File location of the verify roles file.
-     */
-    private _verifyRolesJson = "./src/commands/properties/verify-roles.json";
-
-    /**
-     * Reads verify roles file and transforms it to a usable json format.
-     */
-    private readVerifyRoles = () => {
-        const verifyRolesJson = readFileSync(this._verifyRolesJson, "utf-8");
-        return JSON.parse(verifyRolesJson);
-    }
-
-    /**
      * Loads verify roles from json file in runtime, file can be changed and changes will be reflected without rebuilding.
      */
     public getVerifyRoles = async (): Promise<Role[]> => {
-        const verifyRolesJson = this.readVerifyRoles()
+        const verifyRolesJson = await FileSystem.readFile(EFileTypeCategory.VerifyRoles);
         const verifyRoles = verifyRolesJson as string[]
 
         let roles: Role[] = []
@@ -160,15 +98,14 @@ export class CCommandHelper {
         return roles;
     }
 
-    public setVerifyRoles = (roles: Role[]) => {
+    public setVerifyRoles = async (roles: Role[]) => {
         let roleIds: string[] = [];
 
         roles.forEach((role) => {
             roleIds.push(role.id);
         })
 
-        const fileData = JSON.stringify(roleIds, null, 2);
-        writeFileSync(this._verifyRolesJson, fileData);
+        await FileSystem.writeFile(EFileTypeCategory.VerifyRoles, roleIds);
     }
 
     /* -------------------- DISCORD SPECIFIC STUFF -------------------- */
@@ -223,7 +160,7 @@ export class CCommandHelper {
     public sendReply = async (error: boolean = false) => {
         if (this.interaction.replied) { return }
 
-        const cmdProperties = this.getCommandProperties();
+        const cmdProperties = CommandProperties.getProperties(this.commandName);
 
         let replyMessage = error ? cmdProperties.ErrorMessage : cmdProperties.ReplyMessage;
 
@@ -305,93 +242,7 @@ export class CCommandHelper {
      * If a command takes more then 3 seconds to execute, the reply needs to be deferred so it doesn't time out.
      */
     public deferReply = async () => {
-        await this.interaction.deferReply({ ephemeral: this.getCommandProperties().Ephemeral });
-    }
-
-    /* -------------------- FILE STUFF -------------------- */
-
-    /**
-     * Global var for createFile and sendFile functions.
-     */
-    private _filePath: string | undefined;
-
-    /**
-     * Const global var to store file path to generated-files.
-     */
-    private generatedFilesFolder: string = "./src/generated-files"
-
-    /**
-     * Will throw an error if the global var filePath is invalid. Call before needing to use the filePath for any reason.
-     */
-    private validateFilePath = (): string => {
-        if (!this._filePath) {
-            throw new Error("filePath is undefined, please call 'createFile' before any other file related functions.");
-        }
-
-        const thirdLastLetterIndex = this._filePath.length - 4;
-        if (this._filePath[thirdLastLetterIndex] !== '.') {
-            throw new Error("fileName did not include a valid file extension, please give fileName a valid file extension.");
-        }
-
-        return this._filePath;
-    }
-
-    /**
-     * Updates filePath global var and returns a validated filePath string.
-     *
-     * @param fileName name of file.
-     */
-    private setFilePath = (fileName: string): string => {
-        this._filePath = this.generatedFilesFolder + "/" + fileName;
-        return this.validateFilePath();
-    }
-
-    /**
-     * Checks if the folder exists to create the new file; if it doesn't, it creates the folder.
-     */
-    private validateFileFolder = async () => {
-        if (!existsSync(this.generatedFilesFolder)) {
-            await promises.mkdir(this.generatedFilesFolder);
-        }
-    }
-
-    /**
-     * Attempts to create a file in the generated-files folder.
-     *
-     * @param fileName what the file will be called (must include file extension).
-     * @param dataToWrite what will be written to the file during creation.
-     */
-    public createFile = async (fileName: string, dataToWrite: string) => {
-        try {
-            this.fileLogger.debug("Attempting to create file.");
-
-            await this.validateFileFolder();
-            const filePath = this.setFilePath(fileName);
-            await promises.writeFile(filePath, dataToWrite);
-
-            this.fileLogger.debug("Successfully created file.");
-        } catch (error) {
-            this.fileLogger.error("Failed to create file.", error);
-        }
-    }
-
-    /**
-     * Attempt to send a file to the specified channel.
-     *
-     * @param payload IFilePayload to use to send file.
-     */
-    public sendFile = async (payload: IFilePayload) => {
-        try {
-            this.fileLogger.debug("Attempting to send file to recipient.");
-
-            const filePath = !payload.fileName ? this.validateFilePath() : this.setFilePath(payload.fileName);
-            await payload.recipient.send({content: payload.message, files: [filePath]});
-            await promises.rm(filePath);
-
-            this.fileLogger.debug("Successfully sent file to channel.");
-        } catch (error) {
-            this.fileLogger.error("Failed to send file to channel.", error);
-        }
+        await this.interaction.deferReply({ ephemeral: CommandProperties.getProperties(this.commandName).Ephemeral });
     }
 
     /* -------------------- GOOGLE SHEETS STUFF -------------------- */

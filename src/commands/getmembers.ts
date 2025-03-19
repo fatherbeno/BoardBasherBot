@@ -1,6 +1,12 @@
 import { Collection, GuildMember, SlashCommandBuilder } from "discord.js";
 import { CCommandHelper } from "../helpers/CCommandHelper";
+import { FileSystem } from "../helpers/CFileSystemHelper";
+import { CommandProperties } from "../helpers/CCommandPropertiesHelper";
 
+/**
+ * Takes a collection of guild members and transforms it into a csv compatible string.
+ * @param members Collection of guild members to change into a string.
+ */
 const generateCsvFileString = (members: Collection<string, GuildMember>): string => {
     let userRoles: string = '';
     return members.reduce((acc, member) => {
@@ -27,7 +33,10 @@ export const execute = async (cmdHelper: CCommandHelper) => {
         const members = await cmdHelper.getGuildMembers();
 
         // generate, then send file
-        await cmdHelper.createFile("userdata.csv", generateCsvFileString(members));
-        await cmdHelper.sendFile({recipient: cmdHelper.interaction.user, message: cmdHelper.getCommandProperties().ExtraMessage});
+        const filePath = await FileSystem.createFile("userdata.csv", generateCsvFileString(members));
+        await FileSystem.sendFile({
+            recipient: cmdHelper.interaction.user,
+            filePath: filePath, message: CommandProperties.getProperties(cmdHelper.commandName).ExtraMessage
+        });
     });
 };

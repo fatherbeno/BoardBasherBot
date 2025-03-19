@@ -1,9 +1,10 @@
 export enum ELoggerCategory {
     Core = "CORE",
     Command = "COMMAND",
+    CommandProperties = "COMMAND_PROPERTIES",
     Message = "MESSAGE",
     DirectMessage = "DIRECT_MESSAGE",
-    GeneratedFiles = "GENERATED_FILES",
+    FilesSystem = "FILES_SYSTEM",
     Discord = "DISCORD",
     GoogleSheets = "GOOGLE_SHEETS"
 }

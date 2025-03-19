@@ -1,5 +1,6 @@
 import { SlashCommandBuilder} from "discord.js";
 import { CCommandHelper } from "../helpers/CCommandHelper";
+import { FileSystem } from "../helpers/CFileSystemHelper";
 
 export const data = new SlashCommandBuilder()
     .setName("makefile")
@@ -17,7 +18,7 @@ export const execute = async (cmdHelper: CCommandHelper) => {
         const channel = await cmdHelper.getTextChannel();
         
         // generate, then send file to channel
-        await cmdHelper.createFile("message.txt", cmdHelper.getStringValue("message"));
-        await cmdHelper.sendFile({recipient: channel});
+        const filePath = await FileSystem.createFile("message.txt", cmdHelper.getStringValue("message"));
+        await FileSystem.sendFile({recipient: channel, filePath: filePath});
     });
 };

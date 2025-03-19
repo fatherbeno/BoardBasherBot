@@ -26,6 +26,6 @@ export const data = new SlashCommandBuilder()
 
 export const execute = async (cmdHelper: CCommandHelper) => {
     await cmdHelper.executeCommand(async () => {
-        GlobalProperties.setProperties(cmdHelper.getStringValue("property"), cmdHelper.getStringValue("value"))
+        await GlobalProperties.setProperties(cmdHelper.getStringValue("property"), cmdHelper.getStringValue("value"))
     })
 };
