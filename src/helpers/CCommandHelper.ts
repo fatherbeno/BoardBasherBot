@@ -1,4 +1,4 @@
-import { ChannelType, Client, Collection, CommandInteraction, GuildMember, Role, TextChannel } from "discord.js";
+import { Channel, ChannelType, Client, Collection, CommandInteraction, GuildMember, Role, TextChannel } from "discord.js";
 import { ICommandInput } from "../types/interfaces/ICommandInput";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
@@ -257,6 +257,16 @@ export class CCommandHelper {
     public getRoleValue(valueName: string): Role {
         // @ts-ignore
         return this.interaction.options.getRole(valueName);
+    }
+
+    /**
+     * Returns value of addChannelOption on command depending on value name.
+     * @param valueName Name used to find data of a value.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public getChannelValue(valueName: string): Channel {
+        // @ts-ignore
+        return this.interaction.options.getChannel(valueName);
     }
 
     /**
