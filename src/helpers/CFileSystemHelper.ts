@@ -183,7 +183,7 @@ class CFileSystemHelper {
             filePath = this.validateFilePath(filePath);
             filePath = await this.validateFileExists(filePath, "")
 
-            payload.recipient.send({content: payload.message, files: [filePath]});
+            await payload.recipient.send({content: payload.message, files: [filePath]});
             await promises.rm(filePath);
 
             this.fileLogger.debug("Successfully sent file to channel.");
