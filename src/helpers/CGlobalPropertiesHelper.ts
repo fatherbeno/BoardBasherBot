@@ -53,8 +53,8 @@ class CGlobalPropertiesHelper {
      * @author Benjamin Gulliver (fatherbeno)
      * @private
      */
-    private loadProperties() {
-        const globalPropertiesJson = FileSystem.readFile(EFileTypeCategory.GlobalProperties);
+    private async loadProperties() {
+        const globalPropertiesJson = await FileSystem.readFile(EFileTypeCategory.GlobalProperties);
 
         if (!this._globalPropertiesObject) this._globalPropertiesObject = Object.assign(new CGlobalProperties(), globalPropertiesJson) as CGlobalProperties;
         if (this._globalPropertiesObject) this.assignGlobalProperties(globalPropertiesJson);
@@ -77,7 +77,7 @@ class CGlobalPropertiesHelper {
         globalProperties[property as keyof typeof globalProperties] = value;
 
         await FileSystem.writeFile(EFileTypeCategory.GlobalProperties, globalProperties);
-        this.loadProperties();
+        await this.loadProperties();
 
         this.logger.debug(`Property: ${property} was successfully change to value: ${value}.`)
     }

@@ -22,7 +22,7 @@ export class CGlobalProperties {
      * @privateRemarks This is set using the /setbotreplychannel command, not using the /setglobalproperty command.
      * @privateRemarks Provided id is default channel id if no bot reply channel id property has been set.
      */
-    private _botReplyChannelID: string = "1274158081059590164";
+    private _botReplyChannelID: string = "";
 
     /**
      * Channel that the bot will send messages into.

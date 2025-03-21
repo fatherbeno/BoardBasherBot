@@ -152,7 +152,7 @@ export class CMessageHelper {
      */
     public isChannelDirectMessageChannel(inChannel?: Channel): boolean {
         let channel = inChannel ? inChannel : this.message.channel;
-        return channel.id === GlobalProperties.getProperties().BotDMReplyMessage;
+        return channel.id === GlobalProperties.getProperties().BotReplyChannel;
     }
 
     /**
