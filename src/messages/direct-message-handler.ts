@@ -3,6 +3,7 @@ import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 import { CMessageHelper } from "../helpers/CMessageHelper";
 import { GlobalProperties } from "../helpers/CGlobalPropertiesHelper";
+import { LogErrorMessage } from "../helpers/CLogErrorMessageHelper";
 
 const logger = getLogger(ELoggerCategory.DirectMessage);
 
@@ -50,6 +51,9 @@ export const handleDM = async (msgHelper: CMessageHelper) => {
         }
     } catch (error) {
         await msgHelper.sendMessageToDM(GlobalProperties.getProperties().BotDMFailMessage);
-        logger.error("Failed to handle DM interaction.", error);
+
+        const errorMessage = `Failed to handle DM interaction from ${msgHelper.message.author}.`
+        await LogErrorMessage.sendErrorMessage(errorMessage, error);
+        logger.error(errorMessage, error);
     }
 }

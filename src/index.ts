@@ -7,6 +7,7 @@ import { getLogger } from "./logging-config";
 import { ELoggerCategory } from "./types/enums/ELoggerCategory";
 import { CCommandHelper } from "./helpers/CCommandHelper";
 import { CMessageHelper } from "./helpers/CMessageHelper";
+import { LogErrorMessage } from "./helpers/CLogErrorMessageHelper";
 
 const logger = getLogger(ELoggerCategory.Core);
 const commandLogger = getLogger(ELoggerCategory.Command);
@@ -19,7 +20,8 @@ export const client = new Client({ intents: [
 ]});
 
 client.once("ready", () => {
-    logger.debug("Board Basher Bot Online: Time for some Board Bashing :)");
+    LogErrorMessage.Client = client;
+    logger.debug("Bot Online: Time for some epic bot functionality :)");
 });
 
 client.on("guildCreate", async () => {

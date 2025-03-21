@@ -9,10 +9,10 @@ import { getSheet } from "../google-sheet";
 import { FileSystem } from "./CFileSystemHelper";
 import { EFileTypeCategory } from "../types/enums/EFileTypeCategory";
 import { CommandProperties } from "./CCommandPropertiesHelper";
-import { GlobalProperties } from "./CGlobalPropertiesHelper";
+import { LogErrorMessage } from "./CLogErrorMessageHelper";
 
 /**
- * Helper class generate whenever a command is executed. Includes many functions that minimise command complications.
+ * Helper class that generates whenever a command is executed. Includes many functions that minimise command complications.
  * @author Benjamin Gulliver (fatherbeno)
  */
 export class CCommandHelper {
@@ -84,8 +84,7 @@ export class CCommandHelper {
         const errorMessage = `Command **/${this.interaction.commandName}** has failed to execute for member ${this.getCommandUserMember()}.`;
         this.logger.error(errorMessage, error);
 
-        const errorLogChannel = await this.getTextChannel(GlobalProperties.getProperties().BotErrorLogsChannel);
-        await errorLogChannel.send({content: `${errorMessage}\n${error}`});
+        await LogErrorMessage.sendErrorMessage(errorMessage, error);
 
         if (!this.interaction.replied) {
             await this.sendReply(true);
