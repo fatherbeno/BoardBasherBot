@@ -5,43 +5,30 @@ import { Channel } from "discord.js";
  * @author Benjamin Gulliver (fatherbeno)
  */
 export class CGlobalProperties {
-    constructor(botReplyChannelID?: string, replyOperationPrefix?: string,
-                commandErrorMessage?: string, maxBotMessageLength?: string,
-                botDMReplyMessage?: string, botDMFailMessage?: string) {
-        if (botReplyChannelID) this.BotReplyChannel = botReplyChannelID;
+    constructor(replyOperationPrefix?: string, commandErrorMessage?: string,
+                maxBotMessageLength?: string, botDMReplyMessage?: string, botDMFailMessage?: string,
+
+                botReplyChannelID?: string, botVerificationChannelID?: string,
+                botWelcomeChannelID?: string, botVerifyLogsID?: string, botErrorLogsID?: string) {
+
         if (replyOperationPrefix) this.ReplyOperationPrefix = replyOperationPrefix;
         if (commandErrorMessage) this.CommandErrorMessage = commandErrorMessage;
         if (maxBotMessageLength) this.MaxBotMessageLength = maxBotMessageLength;
         if (botDMReplyMessage) this.BotDMReplyMessage = botDMReplyMessage;
         if (botDMFailMessage) this.BotDMFailMessage = botDMFailMessage;
+
+        if (botReplyChannelID) this.BotReplyChannel = botReplyChannelID;
+        if (botVerificationChannelID) this.BotVerificationChannel = botVerificationChannelID;
+        if (botWelcomeChannelID) this.BotWelcomeChannel = botWelcomeChannelID;
+        if (botVerifyLogsID) this.BotVerifyLogsChannel = botVerifyLogsID;
+        if (botErrorLogsID) this.BotErrorLogsChannel = botErrorLogsID;
     }
 
-    /**
-     * Channel that the bot will send messages into.
-     * @private
-     * @privateRemarks This is set using the /setbotreplychannel command, not using the /setglobalproperty command.
-     * @privateRemarks Provided id is default channel id if no bot reply channel id property has been set.
-     */
-    private _botReplyChannelID: string = "";
+    /* -------------------- BOT INTEGRATION STUFF -------------------- */
 
     /**
-     * Channel that the bot will send messages into.
-     * @return An id that can be used to fetch the channel from the client.
+     * The below values are set using the /setglobalproperties command.
      */
-    public get BotReplyChannel(): string { return this._botReplyChannelID; }
-
-    /**
-     * Channel that the bot will send messages into.
-     * @param channel member input channel that then the id is saved.
-     * @privateRemarks This is set using the /setbotreplychannel command, not using the /setglobalproperty command.
-     */
-    public set BotReplyChannel(channel: Channel | string) {
-        if (typeof channel === "string") {
-            this._botReplyChannelID = channel;
-        } else {
-            this._botReplyChannelID = channel.id;
-        }
-    }
 
     /**
      * Custom prefix for the reply operation.
@@ -53,12 +40,14 @@ export class CGlobalProperties {
     /**
      * Custom prefix for the reply operation.
      * @return String that contains the reply operation prefix.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public get ReplyOperationPrefix(): string { return this._replyOperationPrefix; }
 
     /**
      * Custom prefix for the reply operation.
      * @param input String that sets the new reply operation prefix.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public set ReplyOperationPrefix(input: string) { this._replyOperationPrefix = input; }
 
@@ -72,12 +61,14 @@ export class CGlobalProperties {
     /**
      * Error message for if command doesn't have a command properties' entry.
      * @return Global properties' set command error message.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public get CommandErrorMessage(): string { return this._commandErrorMessage; }
 
     /**
      * Error message for if command doesn't have a command properties' entry.
      * @param input Global properties' new command error message.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public set CommandErrorMessage(input: string) { this._commandErrorMessage = input; }
 
@@ -91,6 +82,7 @@ export class CGlobalProperties {
     /**
      * Max message length value when sending a message to or as the bot.
      * @return Global properties' set max bot message length.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public get MaxBotMessageLength(): number { return this._maxBotMessageLength; }
 
@@ -98,6 +90,7 @@ export class CGlobalProperties {
      * Max message length value when sending a message to or as the bot.
      * @param input Global properties' new max bot message length.
      * Validates that member input is actually a number, will throw an error if a string in inputted.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public set MaxBotMessageLength(input: string) {
         const inNumber = +input;
@@ -117,12 +110,14 @@ export class CGlobalProperties {
     /**
      * Message to send to member when they DM the bot.
      * @return Global properties' set bot DM reply message.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public get BotDMReplyMessage(): string { return this._botDMReplyMessage; }
 
     /**
      * Message to send to member when they DM the bot.
      * @param input Global properties' new bot DM reply message.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public set BotDMReplyMessage(input: string) { this._botDMReplyMessage = input; }
 
@@ -136,12 +131,155 @@ export class CGlobalProperties {
     /**
      * Message to send to member when the bot fails to receive the member's DM for some reason.
      * @return Global properties' set bot DM reply message.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public get BotDMFailMessage(): string { return this._botDMFailMessage; }
 
     /**
      * Message to send to member when the bot fails to receive the member's DM for some reason.
      * @param input Global properties' new bot DM reply message.
+     * @author Benjamin Gulliver (fatherbeno)
      */
     public set BotDMFailMessage(input: string) { this._botDMFailMessage = input; }
+
+    /* -------------------- BOT SPECIAL CHANNELS STUFF -------------------- */
+
+    /**
+     * The below values are set using the /setbotchannels command.
+     */
+
+    /**
+     * Channel that the bot will send received messages into.
+     * @private
+     * @privateRemarks If no bot reply channel ID property has been set then the bot will fail to receive the message.
+     */
+    private _botReplyChannelID: string = "";
+
+    /**
+     * Channel that the bot will send received messages into.
+     * @return An ID that can be used to fetch the channel from the client.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public get BotReplyChannel(): string { return this._botReplyChannelID; }
+
+    /**
+     * Channel that the bot will send received messages into.
+     * @param channel Member input channel that then the ID is saved.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public set BotReplyChannel(channel: Channel | string) {
+        if (typeof channel === "string") {
+            this._botReplyChannelID = channel;
+        } else {
+            this._botReplyChannelID = channel.id;
+        }
+    }
+
+    /**
+     * Channel that the bot will delete all messages sent into.
+     * @private
+     * @privateRemarks If no channel ID property has been set then the bot will fail.
+     */
+    private _botVerificationChannelID: string = "";
+
+    /**
+     * Channel that the bot will delete all messages sent into.
+     * @return Global properties' set bot verification channel.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public get BotVerificationChannel(): string { return this._botVerificationChannelID; }
+
+    /**
+     * Channel that the bot will delete all messages sent into.
+     * @param channel Member input channel that then the ID is saved.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public set BotVerificationChannel(channel: Channel | string) {
+        if (typeof channel === "string") {
+            this._botVerificationChannelID = channel;
+        } else {
+            this._botVerificationChannelID = channel.id;
+        }
+    }
+
+    /**
+     * Channel that the bot send a welcome message for each member that successfully verifies.
+     * @private
+     * @privateRemarks If no channel ID property has been set then the bot will fail.
+     */
+    private _botWelcomeChannelID: string = "";
+
+    /**
+     * Channel that the bot send a welcome message for each member that successfully verifies.
+     * @return Global properties' set bot verification channel.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public get BotWelcomeChannel(): string { return this._botWelcomeChannelID; }
+
+    /**
+     * Channel that the bot send a welcome message for each member that successfully verifies.
+     * @param channel Member input channel that then the ID is saved.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public set BotWelcomeChannel(channel: Channel | string) {
+        if (typeof channel === "string") {
+            this._botWelcomeChannelID = channel;
+        } else {
+            this._botWelcomeChannelID = channel.id;
+        }
+    }
+
+    /**
+     * Channel that the bot send a log message for each member that successfully verifies.
+     * @private
+     * @privateRemarks If no channel ID property has been set then the bot will fail.
+     */
+    private _botVerifyLogsChannelID: string = "";
+
+    /**
+     * Channel that the bot send a log message for each member that successfully verifies.
+     * @return Global properties' set bot verification channel.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public get BotVerifyLogsChannel(): string { return this._botVerifyLogsChannelID; }
+
+    /**
+     * Channel that the bot send a log message for each member that successfully verifies.
+     * @param channel Member input channel that then the ID is saved.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public set BotVerifyLogsChannel(channel: Channel | string) {
+        if (typeof channel === "string") {
+            this._botVerifyLogsChannelID = channel;
+        } else {
+            this._botVerifyLogsChannelID = channel.id;
+        }
+    }
+
+    /**
+     * Channel that the bot send a log message for when a command fails to execute.
+     * @private
+     * @privateRemarks If no channel ID property has been set then the bot will fail.
+     */
+    private _botErrorLogsID: string = "";
+
+    /**
+     * Channel that the bot send a log message for when a command fails to execute.
+     * @return Global properties' set bot verification channel.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public get BotErrorLogsChannel(): string { return this._botErrorLogsID; }
+
+    /**
+     * Channel that the bot send a log message for when a command fails to execute.
+     * @param channel Member input channel that then the ID is saved.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public set BotErrorLogsChannel(channel: Channel | string) {
+        if (typeof channel === "string") {
+            this._botErrorLogsID = channel;
+        } else {
+            this._botErrorLogsID = channel.id;
+        }
+    }
 }

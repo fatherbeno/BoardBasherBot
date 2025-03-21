@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { CCommandHelper } from "../helpers/CCommandHelper";
+import { GlobalProperties } from "../helpers/CGlobalPropertiesHelper";
 
 export const data = new SlashCommandBuilder()
     .setName("verify")
@@ -28,7 +29,7 @@ export const execute = async (cmdHelper: CCommandHelper) => {
         if (roles.length === 0) throw new Error("No roles have been added to the verify roles, please add at least one role first.");
 
         // get the guild member who used the command
-        const member = await cmdHelper.getCommandUserMember();
+        const member = cmdHelper.getCommandUserMember();
 
         // update filtered row on the sheet
         await cmdHelper.updateSheet(filteredRow, () => {
@@ -40,5 +41,13 @@ export const execute = async (cmdHelper: CCommandHelper) => {
         for (let role of roles) {
             await member.roles.add(role);
         }
+
+        // welcome message
+        const welcomeChannel = await cmdHelper.getTextChannel(GlobalProperties.getProperties().BotWelcomeChannel);
+        await welcomeChannel.send({content: `Welcome ${member} to the SMASH! Crew Community.`});
+
+        // log message
+        const logChannel = await cmdHelper.getTextChannel(GlobalProperties.getProperties().BotVerifyLogsChannel);
+        await logChannel.send({content: `User ${member} has successfully verified.`}); // change to diff payload
     });
 };

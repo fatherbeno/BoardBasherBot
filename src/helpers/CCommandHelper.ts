@@ -9,6 +9,7 @@ import { getSheet } from "../google-sheet";
 import { FileSystem } from "./CFileSystemHelper";
 import { EFileTypeCategory } from "../types/enums/EFileTypeCategory";
 import { CommandProperties } from "./CCommandPropertiesHelper";
+import { GlobalProperties } from "./CGlobalPropertiesHelper";
 
 /**
  * Helper class generate whenever a command is executed. Includes many functions that minimise command complications.
@@ -74,13 +75,17 @@ export class CCommandHelper {
     private readonly googleLogger = getLogger(ELoggerCategory.GoogleSheets);
 
     /**
-     * Logs a command error and then sends an error message to the user.
+     * Logs a command error in console and discord, then sends an error message to the member.
      * @param error Error message to be displayed in the logs.
      * @author Benjamin Gulliver (fatherbeno)
      * @private
      */
     private async logCommandError(error: any) {
-        this.logger.error(`Command ${this.interaction.commandName} has failed to execute.`, error);
+        const errorMessage = `Command **/${this.interaction.commandName}** has failed to execute for member ${this.getCommandUserMember()}.`;
+        this.logger.error(errorMessage, error);
+
+        const errorLogChannel = await this.getTextChannel(GlobalProperties.getProperties().BotErrorLogsChannel);
+        await errorLogChannel.send({content: `${errorMessage}\n${error}`});
 
         if (!this.interaction.replied) {
             await this.sendReply(true);
@@ -150,7 +155,7 @@ export class CCommandHelper {
     }
 
     /**
-     * Validates and attempts to fetch a channel from the guild using a channel id.
+     * Validates and attempts to fetch a channel from the guild using a channel ID.
      * @return Text chat that the command was used in. Will only check for normal text chats.
      * @author Benjamin Gulliver (fatherbeno)
      */
@@ -192,8 +197,8 @@ export class CCommandHelper {
     }
 
     /**
-     * Validates and attempts to fetch a role from the guild using a role id.
-     * @param roleId Id to use to try and find corresponding guild role.
+     * Validates and attempts to fetch a role from the guild using a role ID.
+     * @param roleId ID to use to try and find corresponding guild role.
      * @author Benjamin Gulliver (fatherbeno)
      */
     public async getRole(roleId: string): Promise<Role> {
@@ -217,26 +222,12 @@ export class CCommandHelper {
     }
 
     /**
-     * Validates and attempts to fetch a member from the guild who used the command.
+     * Returns the member who used the command.
      * @return Guild member who used the command.
      * @author Benjamin Gulliver (fatherbeno)
      */
-    public async getCommandUserMember(): Promise<GuildMember> {
-
-        if (!this.interaction?.guild) {
-            throw new Error("Could not get guild from interaction.");
-        }
-
-        if (!this.interaction.guild?.members) {
-            throw new Error("Could not get members from guild.");
-        }
-
-        const member = await this.interaction.guild.members.fetch(this.interaction.user.id) as GuildMember;
-        if (!member) {
-            throw new Error("Could not fetch member from guild members.")
-        }
-
-        return member;
+    public getCommandUserMember(): GuildMember {
+        return <GuildMember>this.interaction.member;
     }
 
     /**

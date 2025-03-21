@@ -17,7 +17,9 @@ export const data = new SlashCommandBuilder()
                 { name: "reply", value: "reply" },
                 { name: "setcmdproperty", value: "setcmdproperty" },
                 { name: "verify", value: "verify" },
+                { name: "verifyroles", value: "verifyroles" },
                 { name: "setglobalproperty", value: "setglobalproperty" },
+                { name: "setbotchannels", value: "setbotchannels" },
             )
     })
     .addStringOption((option) => {

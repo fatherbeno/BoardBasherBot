@@ -6,7 +6,7 @@ import * as verify from "./verify";
 import * as setcmdproperty from "./setcmdproperty";
 import * as verifyroles from "./verifyroles";
 import * as setglobalproperty from "./setglobalproperty"
-import * as setbotreplychannel from "./setbotreplychannel"
+import * as setbotchannels from "./setbotchannels"
 
 export const commands = {
     ping,
@@ -17,5 +17,5 @@ export const commands = {
     setcmdproperty,
     verifyroles,
     setglobalproperty,
-    setbotreplychannel,
+    setbotchannels,
 };
