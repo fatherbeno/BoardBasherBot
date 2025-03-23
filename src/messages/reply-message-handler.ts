@@ -83,13 +83,11 @@ const handleReplyOperation = async (msgHelper: CMessageHelper) => {
 }
 
 /**
- * Handles any messages send to any channels the bot has access to.
+ * Handles any intended reply operations sent to any channels the bot has access to.
  * @param msgHelper Message helper class generated when message was received.
  * @author Benjamin Gulliver (fatherbeno)
  */
 export const handleReply = async (msgHelper: CMessageHelper) => {
-    if (msgHelper.isAuthorBot() || !msgHelper.isMessageLengthValid()) { return; }
-
     if (confirmReplyOperation(msgHelper.message)) {
        await handleReplyOperation(msgHelper);
     }

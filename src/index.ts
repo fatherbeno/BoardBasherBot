@@ -29,12 +29,14 @@ client.on("guildCreate", async () => {
 });
 
 client.on("messageCreate",  async (message) => {
-    if (!message) {
-        return;
+    if (!message) { return; }
+
+    const messageHelper = new CMessageHelper(message);
+    if (!messageHelper.isAuthorBot() && messageHelper.isMessageLengthValid()) {
+        await messageHandlers.dmHandler.handleDM(messageHelper)
+        await messageHandlers.replyHandler.handleReply(messageHelper);
+        await messageHandlers.generalHandler.handleMessage(messageHelper);
     }
-    
-    await messageHandlers.dmHandler.handleDM(new CMessageHelper(message))
-    await messageHandlers.replyHandler.handleReply(new CMessageHelper(message));
 });
 
 client.on("interactionCreate", async (interaction) => {

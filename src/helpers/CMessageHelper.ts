@@ -1,5 +1,12 @@
 import config from "../config";
-import { Channel, ChannelType, Message, TextChannel, User } from "discord.js";
+import {
+    Channel,
+    ChannelType,
+    GuildTextBasedChannel,
+    Message,
+    TextChannel,
+    User
+} from "discord.js";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 import { GlobalProperties } from "./CGlobalPropertiesHelper";
@@ -145,14 +152,35 @@ export class CMessageHelper {
     }
 
     /**
-     * Checks if input channel is the designated bot reply text channel.
-     * @param inChannel Channel to test whether it is the bot reply channel (defaults to initial message's channel).
+     * Checks to see if the channel is a specific channel by id.
+     * @param channelID ID to test (usually parsing in a global property).
+     * @param inChannel Channel to test (defaults to initial message's channel).
+     * @author Benjamin Gulliver (fatherbeno)
+     * @private
+     */
+    private checkChannel(channelID: string, inChannel?: Channel): boolean {
+        const channel = inChannel ? inChannel : this.message.channel;
+        return channel.id === channelID;
+    }
+
+    /**
+     * Checks if channel is the designated bot reply text channel.
+     * @param inChannel Channel to test whether it is the bot reply channel.
      * @return True or false depending on if the channel is the bot reply channel.
      * @author Benjamin Gulliver (fatherbeno)
      */
     public isChannelDirectMessageChannel(inChannel?: Channel): boolean {
-        let channel = inChannel ? inChannel : this.message.channel;
-        return channel.id === GlobalProperties.getProperties().BotReplyChannel;
+        return this.checkChannel(GlobalProperties.getProperties().BotReplyChannel, inChannel);
+    }
+
+    /**
+     * Checks if channel is the designated verify text channel.
+     * @param inChannel Channel to test whether it is the verify channel.
+     * @return True or false depending on if the channel is the verify channel.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public isChannelVerifyChannel(inChannel?: Channel): boolean {
+        return this.checkChannel(GlobalProperties.getProperties().BotVerificationChannel, inChannel);
     }
 
     /**
@@ -175,5 +203,16 @@ export class CMessageHelper {
     public async sendMessageToDM(message: string, user?: User) {
         const userToDM = user ? user : this.message.author;
         await userToDM.send(message);
+    }
+
+    /**
+     * Attempts to delete a specific message from a specific channel.
+     * @param inMessage Message to delete (defaults to initial message).
+     * @param inChannel Channel to delete message from (defaults to initial message's channel).
+     */
+    public async deleteMessageFromChannel(inMessage?: Message, inChannel?: GuildTextBasedChannel) {
+        const message = inMessage ? inMessage : this.message;
+        const channel: GuildTextBasedChannel = inChannel ? inChannel : <GuildTextBasedChannel>this.message.channel;
+        await channel.messages.delete(message)
     }
 }

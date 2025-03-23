@@ -38,8 +38,6 @@ const replyToDMInDM = async (msgHelper: CMessageHelper) => {
  * @author Benjamin Gulliver (fatherbeno)
  */
 export const handleDM = async (msgHelper: CMessageHelper) => {
-    if (msgHelper.isAuthorBot() || !msgHelper.isMessageLengthValid()) { return; }
-    
     try {
         if (msgHelper.message.channel.type === ChannelType.DM) {
             logger.info(`Bot received a Direct Message (DM) from ${msgHelper.message.author.username}.`);
