@@ -10,17 +10,7 @@ export const data = new SlashCommandBuilder()
             .setName("command")
             .setDescription("The command to be changed.")
             .setRequired(true)
-            .addChoices(
-                { name: "getmembers", value: "getmembers" },
-                { name: "makefile", value: "makefile" },
-                { name: "ping", value: "ping" },
-                { name: "reply", value: "reply" },
-                { name: "setcmdproperty", value: "setcmdproperty" },
-                { name: "verify", value: "verify" },
-                { name: "verifyroles", value: "verifyroles" },
-                { name: "setglobalproperty", value: "setglobalproperty" },
-                { name: "setbotchannels", value: "setbotchannels" },
-            )
+            .setAutocomplete(true)
     })
     .addStringOption((option) => {
         return option

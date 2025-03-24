@@ -8,12 +8,13 @@ import { ELoggerCategory } from "./types/enums/ELoggerCategory";
 import { CCommandHelper } from "./helpers/CCommandHelper";
 import { CMessageHelper } from "./helpers/CMessageHelper";
 import { LogErrorMessage } from "./helpers/CLogErrorMessageHelper";
-import {events} from "./events/.events";
+import { events } from "./events/.events";
+import { autocompletes } from "./commands/autocompletes/.autocompletes";
 
 const logger = getLogger(ELoggerCategory.Core);
 const commandLogger = getLogger(ELoggerCategory.Command);
 
-export const client = new Client({ intents: [
+export const client: Client = new Client({ intents: [
     "Guilds", "GuildModeration", "GuildEmojisAndStickers", "GuildMessages", "GuildMembers",
     "DirectMessages", "GuildMessageTyping", "GuildScheduledEvents", "MessageContent"
 ], partials: [
@@ -23,6 +24,7 @@ export const client = new Client({ intents: [
 client.once("ready", () => {
     LogErrorMessage.Client = client;
     events.intervalEvents.launchIntervalEvents(client);
+
     logger.debug("Bot Online: Time for some epic bot functionality :)");
 });
 
@@ -42,14 +44,21 @@ client.on("messageCreate",  async (message) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isCommand()) {
-      return;
-    }
+    if (!interaction.isCommand()) { return; }
     
     const { commandName } = interaction;
     if (commands[commandName as keyof typeof commands]) {
       commandLogger.info(`User '${interaction.user.username}' used command /${commandName}.`)
       await commands[commandName as keyof typeof commands].execute(new CCommandHelper({interaction: interaction, client: client}));
+    }
+});
+
+client.on("interactionCreate", async (interaction) => {
+    if (!interaction.isAutocomplete()) return;
+
+    const { commandName } = interaction;
+    if (autocompletes[commandName as keyof typeof autocompletes]) {
+        await autocompletes[commandName as keyof typeof autocompletes].respond(interaction);
     }
 });
 
