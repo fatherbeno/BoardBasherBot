@@ -4,7 +4,7 @@ import { GlobalProperties } from "../helpers/CGlobalPropertiesHelper";
 
 export const data = new SlashCommandBuilder()
     .setName("setbotchannels")
-    .setDescription("Sets the designated channel in which the bot will send any dms it receives!")
+    .setDescription("Sets the designated channel in for the features in this bot!")
     .addStringOption((option) => {
         return option
             .setName("botchanneloption")
@@ -16,6 +16,7 @@ export const data = new SlashCommandBuilder()
                 { name: "bot welcome channel", value: "BotWelcomeChannel" },
                 { name: "bot verify logs channel", value: "BotVerifyLogsChannel" },
                 { name: "bot error logs channel", value: "BotErrorLogsChannel" },
+                { name: "countdown channel", value: "CountdownChannel" },
             )
     })
     .addChannelOption((option) => {

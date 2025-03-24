@@ -1,4 +1,4 @@
-import { Channel } from "discord.js";
+import { Channel, CategoryChannel } from "discord.js";
 
 /**
  * Class used to translate json global properties data into easily usable data in code.
@@ -8,8 +8,14 @@ export class CGlobalProperties {
     constructor(replyOperationPrefix?: string, commandErrorMessage?: string,
                 maxBotMessageLength?: string, botDMReplyMessage?: string, botDMFailMessage?: string,
 
+                // countdown command data
+                countdownMessage?: string, countdownDate?: string,
+                countdownCompletionMessage?: string,
+
+                // bot channels data
                 botReplyChannelID?: string, botVerificationChannelID?: string,
-                botWelcomeChannelID?: string, botVerifyLogsID?: string, botErrorLogsID?: string) {
+                botWelcomeChannelID?: string, botVerifyLogsID?: string, botErrorLogsID?: string,
+                countdownChannelID?: string) {
 
         if (replyOperationPrefix) this.ReplyOperationPrefix = replyOperationPrefix;
         if (commandErrorMessage) this.CommandErrorMessage = commandErrorMessage;
@@ -17,11 +23,16 @@ export class CGlobalProperties {
         if (botDMReplyMessage) this.BotDMReplyMessage = botDMReplyMessage;
         if (botDMFailMessage) this.BotDMFailMessage = botDMFailMessage;
 
+        if (countdownMessage) this.CountdownMessage = countdownMessage;
+        if (countdownDate) this.CountdownDate = countdownDate;
+        if (countdownCompletionMessage) this.CountdownCompletionMessage = countdownCompletionMessage;
+
         if (botReplyChannelID) this.BotReplyChannel = botReplyChannelID;
         if (botVerificationChannelID) this.BotVerificationChannel = botVerificationChannelID;
         if (botWelcomeChannelID) this.BotWelcomeChannel = botWelcomeChannelID;
         if (botVerifyLogsID) this.BotVerifyLogsChannel = botVerifyLogsID;
         if (botErrorLogsID) this.BotErrorLogsChannel = botErrorLogsID;
+        if (countdownChannelID) this.CountdownChannel = countdownChannelID;
     }
 
     /* -------------------- BOT INTEGRATION STUFF -------------------- */
@@ -142,6 +153,90 @@ export class CGlobalProperties {
      */
     public set BotDMFailMessage(input: string) { this._botDMFailMessage = input; }
 
+    /* -------------------- COUNTDOWN COMMAND STUFF -------------------- */
+
+    /**
+     * The below values are all set using the /setcountdownproperties command.
+     */
+
+    /**
+     * Message that will be displayed along a countdown number as a channel name.
+     * @private
+     */
+    private _countdownMessage: string = "Example message, please change";
+
+    /**
+     * Message that will be displayed along a countdown number as a channel name.
+     * @return The message that will be displayed.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public get CountdownMessage(): string { return this._countdownMessage; }
+
+    /**
+     * Message that will be displayed along a countdown number as a channel name.
+     * @param input New countdown message to be saved.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public set CountdownMessage(input: string) { this._countdownMessage = input; }
+
+    /**
+     * Date to count down to.
+     * @private
+     */
+    private _countdownDate: string = "2000/04/22";
+
+    /**
+     * Date to count down to.
+     * @return The countdown date.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public get CountdownDate(): string { return this._countdownDate; }
+
+    /**
+     * Date to count down to.
+     * @param input New date to count down to. Must be inputted as DD/MM/YYYY.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public set CountdownDate(input: string) {
+        // get day/month/year from input
+        const date = input.split("/");
+        let day: string | number = +date[0];
+        let month: string | number = +date[1];
+        let year = +date[2];
+
+        // validate date input is a valid input
+        if (!day || !month || !year || day > 31 || month > 12 || year > 9999 || day <= 0 || month <= 0 || year <= 0) {
+            throw new Error("Date input was inputted incorrectly, please input a valid date as DD/MM/YYYY.");
+        }
+
+        // append a 0 if input is a single digit
+        if (month < 10) month = `0${month}`;
+        if (day < 10) day = `0${day}`;
+
+        // now set value to valid inputted date
+        this._countdownDate = `${year}/${month}/${day}`;
+    }
+
+    /**
+     * Message that will be displayed as a channel name once the countdown is complete.
+     * @private
+     */
+    private _countdownCompletionMessage: string = "Hooray! The countdown is complete.";
+
+    /**
+     * Message that will be displayed as a channel name once the countdown is complete.
+     * @return The message that will be displayed.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public get CountdownCompletionMessage(): string { return this._countdownCompletionMessage; }
+
+    /**
+     * Message that will be displayed as a channel name once the countdown is complete.
+     * @param input New countdown completion message to be saved.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public set CountdownCompletionMessage(input: string) { this._countdownCompletionMessage = input; }
+
     /* -------------------- BOT SPECIAL CHANNELS STUFF -------------------- */
 
     /**
@@ -167,7 +262,7 @@ export class CGlobalProperties {
      * @param channel Member input channel that then the ID is saved.
      * @author Benjamin Gulliver (fatherbeno)
      */
-    public set BotReplyChannel(channel: Channel | string) {
+    public set BotReplyChannel(channel: CategoryChannel | Channel | string) {
         if (typeof channel === "string") {
             this._botReplyChannelID = channel;
         } else {
@@ -194,7 +289,7 @@ export class CGlobalProperties {
      * @param channel Member input channel that then the ID is saved.
      * @author Benjamin Gulliver (fatherbeno)
      */
-    public set BotVerificationChannel(channel: Channel | string) {
+    public set BotVerificationChannel(channel: CategoryChannel | Channel | string) {
         if (typeof channel === "string") {
             this._botVerificationChannelID = channel;
         } else {
@@ -221,7 +316,7 @@ export class CGlobalProperties {
      * @param channel Member input channel that then the ID is saved.
      * @author Benjamin Gulliver (fatherbeno)
      */
-    public set BotWelcomeChannel(channel: Channel | string) {
+    public set BotWelcomeChannel(channel: CategoryChannel | Channel | string) {
         if (typeof channel === "string") {
             this._botWelcomeChannelID = channel;
         } else {
@@ -248,7 +343,7 @@ export class CGlobalProperties {
      * @param channel Member input channel that then the ID is saved.
      * @author Benjamin Gulliver (fatherbeno)
      */
-    public set BotVerifyLogsChannel(channel: Channel | string) {
+    public set BotVerifyLogsChannel(channel: CategoryChannel | Channel | string) {
         if (typeof channel === "string") {
             this._botVerifyLogsChannelID = channel;
         } else {
@@ -275,11 +370,37 @@ export class CGlobalProperties {
      * @param channel Member input channel that then the ID is saved.
      * @author Benjamin Gulliver (fatherbeno)
      */
-    public set BotErrorLogsChannel(channel: Channel | string) {
+    public set BotErrorLogsChannel(channel: CategoryChannel | Channel | string) {
         if (typeof channel === "string") {
             this._botErrorLogsID = channel;
         } else {
             this._botErrorLogsID = channel.id;
+        }
+    }
+
+    /**
+     * Channel whose name will be changed to display a countdown message.
+     * @private
+     */
+    private _countdownChannelID: string = "";
+
+    /**
+     * Channel whose name will be changed to display a countdown message.
+     * @return An ID that can be used to fetch the channel from the client.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public get CountdownChannel(): string { return this._countdownChannelID; }
+
+    /**
+     * Channel whose name will be changed to display a countdown message.
+     * @param channel Member input channel that then the ID is saved.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public set CountdownChannel(channel: CategoryChannel | Channel | string) {
+        if (typeof channel === "string") {
+            this._countdownChannelID = channel;
+        } else {
+            this._countdownChannelID = channel.id;
         }
     }
 }
