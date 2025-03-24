@@ -1,7 +1,7 @@
-import {CategoryChannel, Channel, Client, TextChannel} from "discord.js";
-import {GlobalProperties} from "../helpers/CGlobalPropertiesHelper";
-import {getLogger} from "../logging-config";
-import {ELoggerCategory} from "../types/enums/ELoggerCategory";
+import { CategoryChannel, Client, TextChannel } from "discord.js";
+import { GlobalProperties } from "../helpers/CGlobalPropertiesHelper";
+import { getLogger } from "../logging-config";
+import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 
 const logger = getLogger(ELoggerCategory.Event);
 
@@ -53,7 +53,7 @@ const channelCountdownEvent = async (client: Client) => {
         // date functionality to calculate the difference (in days) between two dates
         const currentDate = new Date()
         const countdownDate = new Date(GlobalProperties.getProperties().CountdownDate);
-        const daysBetweenDates = Math.ceil((countdownDate.getTime() - currentDate.getTime()) / oneDay);
+        const daysBetweenDates = Math.floor((countdownDate.getTime() - currentDate.getTime()) / oneDay);
 
         // setting which message to display on whether the countdown is complete
         const message = daysBetweenDates > 0 ?
