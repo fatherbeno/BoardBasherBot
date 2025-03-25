@@ -1,6 +1,8 @@
 import { SlashCommandBuilder } from "discord.js";
 import { CCommandHelper } from "../helpers/CCommandHelper";
 import { GlobalProperties } from "../helpers/CGlobalPropertiesHelper";
+import { TUserData } from "../types/types/TRowData";
+import { CGoogleSheetsHelper } from "../helpers/CGoogleSheetsHelper";
 
 export const data = new SlashCommandBuilder()
     .setName("verify")
@@ -17,9 +19,12 @@ export const execute = async (cmdHelper: CCommandHelper) => {
         // deferring reply as operation takes more than 3 seconds
         await cmdHelper.deferReply();
 
+        // creating google sheets helper object to CRUD data from connected sheet
+        const googleSheet = new CGoogleSheetsHelper<TUserData>();
+
         // use name input to find a row with a unique, corresponding name
         const name = cmdHelper.getStringValue("name");
-        const filteredRow = await cmdHelper.findRow((data) => {
+        const filteredRow = await googleSheet.findRow((data) => {
             //"name" is the title of a column in the sheet
             return data.get("name") === name;
         });
@@ -32,7 +37,7 @@ export const execute = async (cmdHelper: CCommandHelper) => {
         const member = cmdHelper.getCommandUserMember();
 
         // update filtered row on the sheet
-        await cmdHelper.updateSheet(filteredRow, () => {
+        await googleSheet.updateSheet(filteredRow, () => {
             filteredRow.set("verified", true);
             filteredRow.set("discordId", cmdHelper.interaction.user.id);
         });
