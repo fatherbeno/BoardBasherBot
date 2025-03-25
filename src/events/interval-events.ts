@@ -1,5 +1,5 @@
 import { CategoryChannel, Client, TextChannel } from "discord.js";
-import { GlobalProperties } from "../helpers/CGlobalPropertiesHelper";
+import { GlobalProperties } from "../helpers/.helpers";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 

@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
-import { GlobalProperties } from "./CGlobalPropertiesHelper";
+import { GlobalProperties } from "./.helpers";
 
 /**
  * Helper class to assist with anything to do with channel messages. Is constructed with a reference to the initial message.

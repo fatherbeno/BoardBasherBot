@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { CCommandHelper } from "../helpers/CCommandHelper";
-import { GlobalProperties } from "../helpers/CGlobalPropertiesHelper";
+import { GlobalProperties } from "../helpers/.helpers";
 
 export const data = new SlashCommandBuilder()
     .setName("setbotchannels")

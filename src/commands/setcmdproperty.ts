@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { CCommandHelper } from "../helpers/CCommandHelper";
-import { CommandProperties } from "../helpers/CCommandPropertiesHelper";
+import { CommandProperties } from "../helpers/.helpers";
 
 export const data = new SlashCommandBuilder()
     .setName("setcmdproperty")

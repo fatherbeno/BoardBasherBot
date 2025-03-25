@@ -1,15 +1,18 @@
-import { Channel, ChannelType, Client, Collection, CommandInteraction, GuildMember, Role, TextChannel } from "discord.js";
+import {
+    Channel,
+    ChannelType,
+    Client,
+    Collection,
+    CommandInteraction,
+    Guild,
+    GuildMember,
+    Role,
+    TextChannel
+} from "discord.js";
 import { ICommandInput } from "../types/interfaces/ICommandInput";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
-import { GoogleSpreadsheetRow } from "google-spreadsheet";
-import { IUpdateDataInput } from "../types/interfaces/IUpdateDataInput";
-import { TRowData } from "../types/types/TRowData";
-import { getSheet } from "../google-sheet";
-import { FileSystem } from "./CFileSystemHelper";
-import { EFileTypeCategory } from "../types/enums/EFileTypeCategory";
-import { CommandProperties } from "./CCommandPropertiesHelper";
-import { LogErrorMessage } from "./CLogErrorMessageHelper";
+import { CommandProperties, LogErrorMessage } from "./.helpers";
 
 /**
  * Helper class that generates whenever a command is executed. Includes many functions that minimise command complications.
@@ -90,41 +93,6 @@ export class CCommandHelper {
         }
     }
 
-    /* -------------------- INTEGRATION STUFF -------------------- */
-
-    /**
-     * Loads verify roles from json file in runtime, file can be changed and changes will be reflected without rebuilding.
-     * @return Array of roles read from the json file.
-     * @author Benjamin Gulliver (fatherbeno)
-     */
-    public async getVerifyRoles(): Promise<Role[]> {
-        const verifyRolesJson = await FileSystem.readFile(EFileTypeCategory.VerifyRoles);
-        const verifyRoles = verifyRolesJson as string[]
-
-        let roles: Role[] = []
-
-        for (let roleId of verifyRoles) {
-            roles.push(await this.getRole(roleId))
-        }
-
-        return roles;
-    }
-
-    /**
-     * Sets verify roles to json file in runtime.
-     * @param roles Array of roles to save to json file.
-     * @author Benjamin Gulliver (fatherbeno)
-     */
-    public async setVerifyRoles(roles: Role[]) {
-        let roleIds: string[] = [];
-
-        roles.forEach((role) => {
-            roleIds.push(role.id);
-        })
-
-        await FileSystem.writeFile(EFileTypeCategory.VerifyRoles, roleIds);
-    }
-
     /* -------------------- DISCORD SPECIFIC STUFF -------------------- */
 
     /**
@@ -132,8 +100,9 @@ export class CCommandHelper {
      * @return A collection of guild members (server members).
      * @author Benjamin Gulliver (fatherbeno)
      */
-    public async getGuildMembers(): Promise<Collection<string, GuildMember>> {
-        this.logger.debug("Attempting to fetch all guild members.");
+    public async getGuildMembers(memberID?: string): Promise<Collection<string, GuildMember> | GuildMember> {
+        this.logger.debug("Attempting to fetch guild members.");
+        let output: Collection<string, GuildMember> | GuildMember;
 
         if (!this.interaction?.guild) {
             throw new Error("Could not get guild from interaction.");
@@ -143,13 +112,20 @@ export class CCommandHelper {
             throw new Error("Could not get members from guild.");
         }
 
-        const guildMembers = await this.interaction.guild.members?.fetch();
-        if (!guildMembers) {
-            throw new Error("Failed to fetch members from guild.");
+        if (!memberID) {
+            output = await this.interaction.guild.members?.fetch();
+            if (!output) {
+                throw new Error("Failed to fetch members from guild.");
+            }
+        } else {
+            output = await this.interaction.guild.members?.fetch(memberID);
+            if (!output) {
+                throw new Error("Failed to fetch member from guild based on the ID.");
+            }
         }
 
         this.logger.debug("Successfully fetched all guild members.");
-        return guildMembers
+        return output
     }
 
     /**
@@ -182,7 +158,7 @@ export class CCommandHelper {
 
         const cmdProperties = CommandProperties.getProperties(this.commandName);
 
-        let replyMessage = error ? cmdProperties.ErrorMessage : cmdProperties.ReplyMessage;
+        const replyMessage = error ? cmdProperties.ErrorMessage : cmdProperties.ReplyMessage;
 
         const response = this.interaction.deferred ?
             await this.interaction.editReply(replyMessage) :

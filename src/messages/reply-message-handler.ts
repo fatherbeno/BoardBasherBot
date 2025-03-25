@@ -2,7 +2,7 @@ import { Message, User } from "discord.js";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 import { CMessageHelper } from "../helpers/CMessageHelper";
-import { GlobalProperties } from "../helpers/CGlobalPropertiesHelper";
+import { GlobalProperties } from "../helpers/.helpers";
 
 const logger = getLogger(ELoggerCategory.Message);
 

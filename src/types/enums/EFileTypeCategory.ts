@@ -6,5 +6,5 @@ export enum EFileTypeCategory {
     GeneratedFiles = "GENERATED_FILES",
     GlobalProperties = "GLOBAL_PROPERTIES",
     CommandProperties = "COMMAND_PROPERTIES",
-    VerifyRoles = "VERIFY_ROLES"
+    UserTypeRoles = "USER_TYPE_ROLES"
 }

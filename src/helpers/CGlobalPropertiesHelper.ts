@@ -2,14 +2,14 @@ import { CGlobalProperties } from "../types/classes/CGlobalProperties";
 import { Channel } from "discord.js";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
-import { FileSystem } from "./CFileSystemHelper";
+import { FileSystem } from "./.helpers";
 import { EFileTypeCategory } from "../types/enums/EFileTypeCategory";
 
 /**
  * Helper class tasked with handling all things global properties.
  * @author Benjamin Gulliver (fatherbeno)
  */
-class CGlobalPropertiesHelper {
+export class CGlobalPropertiesHelper {
 
     /* -------------------- CLASS STUFF -------------------- */
 
@@ -82,8 +82,3 @@ class CGlobalPropertiesHelper {
         this.logger.debug(`Property: ${property} was successfully change to value: ${value}.`)
     }
 }
-
-/**
- * Copy of loaded global properties' data and system.
- */
-export const GlobalProperties = new CGlobalPropertiesHelper();

@@ -1,5 +1,5 @@
-import { GlobalProperties } from "./CGlobalPropertiesHelper";
-import {Channel, ChannelType, Client, TextChannel} from "discord.js";
+import { GlobalProperties } from "./.helpers";
+import { ChannelType, Client, TextChannel} from "discord.js";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 
@@ -7,7 +7,11 @@ import { ELoggerCategory } from "../types/enums/ELoggerCategory";
  * Helper class tasked with sending any error messages that occur, to the error logging chat in the guild.
  * @author Benjamin Gulliver (fatherbeno)
  */
-class CLogErrorMessageHelper {
+export class CLogErrorMessageHelper {
+
+    constructor(client: Client) {
+        this._client = client;
+    }
 
     private readonly logger = getLogger(ELoggerCategory.Core);
 
@@ -15,16 +19,7 @@ class CLogErrorMessageHelper {
      * Reference to the client (aka the bot).
      * @private
      */
-    private _client: Client | undefined;
-
-    /**
-     * To be used in index.ts once the client is ready.
-     * @param client Input client to inject into system.
-     * @author Benjamin Gulliver (fatherbeno)
-     */
-    public set Client(client: Client) {
-        this._client = client;
-    }
+    private _client: Client;
 
     /**
      * Stored text channel to use so we do not have to fetch new one. Will fetch new one if global properties data changes.
@@ -72,9 +67,3 @@ class CLogErrorMessageHelper {
         }
     }
 }
-
-/**
- * Copy of log error message helper and its data.
- * @author Benjamin Gulliver (fatherbeno)
- */
-export const LogErrorMessage = new CLogErrorMessageHelper();

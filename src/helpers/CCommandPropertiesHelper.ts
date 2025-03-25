@@ -1,15 +1,16 @@
 import { CCommandProperties } from "../types/classes/CCommandProperties";
-import { FileSystem } from "./CFileSystemHelper";
+import { FileSystem, GlobalProperties } from "./.helpers";
 import { EFileTypeCategory } from "../types/enums/EFileTypeCategory";
-import { GlobalProperties } from "./CGlobalPropertiesHelper";
 import { getLogger} from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
+import { ICommandPropertiesWriter } from "../types/interfaces/ICommandPropertiesWriter";
+import {ChatInputCommandInteraction} from "discord.js";
 
 /**
  * Helper class tasked with handling all things command properties.
  * @author Benjamin Gulliver (fatherbeno)
  */
-class CCommandPropertiesHelper {
+export class CCommandPropertiesHelper {
 
     /* -------------------- CLASS STUFF -------------------- */
 
@@ -73,15 +74,31 @@ class CCommandPropertiesHelper {
         }
 
         allCommandProperties.set(commandName, commandProperty);
+        const writableProperties = this.convertToReadableData(allCommandProperties)
 
-        await FileSystem.writeFile(EFileTypeCategory.CommandProperties, Object.fromEntries(allCommandProperties));
+        await FileSystem.writeFile(EFileTypeCategory.CommandProperties, Object.fromEntries(writableProperties));
         await this.loadProperties();
 
         this.logger.debug(`Property: ${property} on command: /${commandName} was successfully change to value: ${value}.`);
     }
-}
 
-/**
- * Copy of command properties' loaded data.
- */
-export const CommandProperties = new CCommandPropertiesHelper();
+    /**
+     * Changing data into a readable format (this fixed a massive bug).
+     * @author Benjamin Gulliver (fatherbeno)
+     * @private
+     */
+    private convertToReadableData(properties: Map<string, CCommandProperties>): Map<string, ICommandPropertiesWriter> {
+        const readableData = new Map<string, ICommandPropertiesWriter>;
+
+        properties.forEach((value, key) => {
+            readableData.set(key, {
+                ReplyMessage: value.ReplyMessage,
+                ErrorMessage: value.ErrorMessage,
+                ExtraMessage: value.ExtraMessage,
+                Ephemeral: value.Ephemeral
+            });
+        });
+
+        return readableData;
+    }
+}

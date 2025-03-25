@@ -7,9 +7,9 @@ import { getLogger } from "./logging-config";
 import { ELoggerCategory } from "./types/enums/ELoggerCategory";
 import { CCommandHelper } from "./helpers/CCommandHelper";
 import { CMessageHelper } from "./helpers/CMessageHelper";
-import { LogErrorMessage } from "./helpers/CLogErrorMessageHelper";
 import { events } from "./events/.events";
 import { autocompletes } from "./commands/autocompletes/.autocompletes";
+import { initHelpers } from "./helpers/.helpers";
 
 const logger = getLogger(ELoggerCategory.Core);
 const commandLogger = getLogger(ELoggerCategory.Command);
@@ -22,8 +22,8 @@ export const client: Client = new Client({ intents: [
 ]});
 
 client.once("ready", () => {
-    LogErrorMessage.Client = client;
     events.intervalEvents.launchIntervalEvents(client);
+    initHelpers(client);
 
     logger.debug("Bot Online: Time for some epic bot functionality :)");
 });
@@ -44,7 +44,7 @@ client.on("messageCreate",  async (message) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isCommand()) { return; }
+    if (!interaction.isCommand() || interaction.isAutocomplete()) { return; }
     
     const { commandName } = interaction;
     if (commands[commandName as keyof typeof commands]) {

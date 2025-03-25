@@ -1,6 +1,6 @@
 import { SlashCommandBuilder} from "discord.js";
 import { CCommandHelper } from "../helpers/CCommandHelper";
-import { FileSystem } from "../helpers/CFileSystemHelper";
+import { FileSystem } from "../helpers/.helpers";
 
 export const data = new SlashCommandBuilder()
     .setName("makefile")

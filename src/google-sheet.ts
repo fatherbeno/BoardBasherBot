@@ -38,5 +38,3 @@ const loadData = async (): Promise<GoogleSpreadsheetWorksheet> => {
 export const getSheet = async (): Promise<GoogleSpreadsheetWorksheet> => {
     return sheet ? sheet : await loadData();
 }
-
-loadData();

@@ -9,7 +9,7 @@ import { ELoggerCategory } from "../types/enums/ELoggerCategory";
  * Helper class that handles loading data from files and saving data to files.
  * @author Benjamin Gulliver (fatherbeno)
  */
-class CFileSystemHelper {
+export class CFileSystemHelper {
 
     /* -------------------- CLASS STUFF -------------------- */
 
@@ -33,10 +33,10 @@ class CFileSystemHelper {
                 fileName: this._globalPropertiesFileName,
                 fileBase: "{}"
             }],
-            [EFileTypeCategory.VerifyRoles, {
+            [EFileTypeCategory.UserTypeRoles, {
                 fileFolder: this._filesFolder,
-                fileName: this._verifyRolesFileName,
-                fileBase: "[]"
+                fileName: this._userTypeRolesFileName,
+                fileBase: "{}"
             }]
         ]);
     }
@@ -51,7 +51,7 @@ class CFileSystemHelper {
     private readonly _generatedFilesFolder: string = `./src/files/generated-files`;
     private readonly _commandPropertiesFileName: string = "command-properties.json"
     private readonly _globalPropertiesFileName: string = "global-properties.json"
-    private readonly _verifyRolesFileName: string = "verify-roles.json"
+    private readonly _userTypeRolesFileName: string = "user-type-roles.json"
 
     /* -------------------- LOGGING STUFF -------------------- */
 
@@ -230,8 +230,3 @@ class CFileSystemHelper {
         }
     }
 }
-
-/**
- * Copy of loaded file system.
- */
-export const FileSystem = new CFileSystemHelper();

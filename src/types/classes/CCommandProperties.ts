@@ -4,10 +4,10 @@
  */
 export class CCommandProperties {
     constructor(replyMessage?: string, errorMessage?: string, extraMessage?: string, ephemeral?: boolean) {
-        if (replyMessage) this.ReplyMessage = replyMessage;
-        if (errorMessage) this.ErrorMessage = errorMessage;
-        if (extraMessage) this.ExtraMessage = extraMessage;
-        if (ephemeral) this.Ephemeral = ephemeral;
+        if (replyMessage) this._replyMessage = replyMessage;
+        if (errorMessage) this._errorMessage = errorMessage;
+        if (extraMessage) this._extraMessage = extraMessage;
+        if (ephemeral) this._ephemeral = ephemeral;
     }
 
     /**

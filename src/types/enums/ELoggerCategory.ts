@@ -9,7 +9,7 @@ export enum ELoggerCategory {
     Message = "MESSAGE",
     DirectMessage = "DIRECT_MESSAGE",
     FilesSystem = "FILES_SYSTEM",
-    Discord = "DISCORD",
     GoogleSheets = "GOOGLE_SHEETS",
     Event = "EVENT",
+    UserTypeRoles = "USER_TYPE_ROLES",
 }

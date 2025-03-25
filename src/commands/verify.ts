@@ -1,8 +1,9 @@
 import { SlashCommandBuilder } from "discord.js";
-import { CCommandHelper } from "../helpers/CCommandHelper";
-import { GlobalProperties } from "../helpers/CGlobalPropertiesHelper";
+import { CCommandHelper} from "../helpers/CCommandHelper";
+import { GlobalProperties, UserTypeRoles } from "../helpers/.helpers";
 import { TUserData } from "../types/types/TRowData";
 import { CGoogleSheetsHelper } from "../helpers/CGoogleSheetsHelper";
+import { EUserType } from "../types/enums/EUserType";
 
 export const data = new SlashCommandBuilder()
     .setName("verify")
@@ -30,7 +31,7 @@ export const execute = async (cmdHelper: CCommandHelper) => {
         });
 
         // get roles to add to user from json file, and throw an error if there are no roles
-        const roles = await cmdHelper.getVerifyRoles();
+        const roles = await UserTypeRoles.getRoles(EUserType.CurrentCrew);
         if (roles.length === 0) throw new Error("No roles have been added to the verify roles, please add at least one role first.");
 
         // get the guild member who used the command
