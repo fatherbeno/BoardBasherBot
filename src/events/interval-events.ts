@@ -27,7 +27,7 @@ export const launchIntervalEvents = (client: Client) => {
 
     setInterval(async function() {
         await channelCountdownEvent(client);
-    }, twentyNineMinutes);
+    }, oneSecond);
 
     logger.info("Interval events successfully launched.");
 }
@@ -51,9 +51,9 @@ let countdownChannel: TextChannel | CategoryChannel;
 const channelCountdownEvent = async (client: Client) => {
     try {
         // date functionality to calculate the difference (in days) between two dates
-        const currentDate = new Date()
-        const countdownDate = new Date(GlobalProperties.getProperties().CountdownDate);
-        const daysBetweenDates = Math.floor((countdownDate.getTime() - currentDate.getTime()) / oneDay);
+        const currentDate = new Date().setHours(0,0,0,0);
+        const countdownDate = new Date(GlobalProperties.getProperties().CountdownDate).setHours(0,0,0,0);
+        const daysBetweenDates = Math.floor((countdownDate - currentDate) / oneDay);
 
         // setting which message to display on whether the countdown is complete
         const message = daysBetweenDates > 0 ?
