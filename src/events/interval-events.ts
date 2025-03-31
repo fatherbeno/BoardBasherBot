@@ -2,20 +2,14 @@ import { CategoryChannel, Client, TextChannel } from "discord.js";
 import { GlobalProperties } from "../helpers/.helpers";
 import { getLogger } from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
+import { CommonConstants } from "../helpers/CCommonConstantsHelper";
 
 const logger = getLogger(ELoggerCategory.Event);
 
-// standard interval timers
-const oneSecond = 1000;
-const oneMinute = oneSecond*60;
-const oneHour = oneMinute*60;
-const oneDay = oneHour*24;
-
-// custom interval timers
 /**
  * Timer for channel countdown. Triggers at least twice an hour.
  */
-const twentyNineMinutes = oneMinute*29;
+const twentyNineMinutes = CommonConstants.OneMinute*29;
 
 /**
  * Starts all the intervals that are necessary for any interval functionality.
@@ -27,7 +21,7 @@ export const launchIntervalEvents = (client: Client) => {
 
     setInterval(async function() {
         await channelCountdownEvent(client);
-    }, oneSecond);
+    }, twentyNineMinutes);
 
     logger.info("Interval events successfully launched.");
 }
@@ -53,7 +47,7 @@ const channelCountdownEvent = async (client: Client) => {
         // date functionality to calculate the difference (in days) between two dates
         const currentDate = new Date().setHours(0,0,0,0);
         const countdownDate = new Date(GlobalProperties.getProperties().CountdownDate).setHours(0,0,0,0);
-        const daysBetweenDates = Math.floor((countdownDate - currentDate) / oneDay);
+        const daysBetweenDates = Math.floor((countdownDate - currentDate) / CommonConstants.OneDay);
 
         // setting which message to display on whether the countdown is complete
         const message = daysBetweenDates > 0 ?

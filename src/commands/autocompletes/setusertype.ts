@@ -1,5 +1,5 @@
 import { AutocompleteInteraction } from "discord.js";
-import { EUserType } from "../../types/enums/EUserType";
+import { getUserTypeOptions } from "../../helpers/OtherUtilitiesHelper";
 
 export const respond = async (interaction: AutocompleteInteraction) => {
     if (interaction.options.get("usertype")) {
@@ -13,6 +13,11 @@ export const respond = async (interaction: AutocompleteInteraction) => {
     }
 }
 
+/**
+ * Gets a list of members on the guild (except any members with administrator permissions). Filters the members based on the command user's input.
+ * @param interaction Created autocomplete action when this command requires it.
+ * @return A name/value pair object, with name being a member's display name and the value being their ID.
+ */
 const getMemberOptions = async (interaction: AutocompleteInteraction): Promise<{ name: string, value: string }[]> => {
     const members = await interaction.guild?.members.fetch()
     const memberDataArray: { name: string, value: string }[] = []
@@ -28,13 +33,4 @@ const getMemberOptions = async (interaction: AutocompleteInteraction): Promise<{
     })
 
     return memberDataArray;
-}
-
-const getUserTypeOptions = (): { name: string, value: string }[] => {
-    return Object.entries(EUserType).map((key, value) => {
-        return {
-            name: key[0].replace(/([A-Z])/g, ' $1').trim(),
-            value: key[1]
-        }
-    });
 }

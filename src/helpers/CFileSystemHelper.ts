@@ -96,7 +96,7 @@ export class CFileSystemHelper {
 
     /**
      * Checks if a file exists to import new data into; if it doesn't, it creates the file.
-     * @param filePath Path of file to validate
+     * @param filePath Path of file to validate.
      * @param fileBase If file is not present, this is the initial data the file will be created with.
      * @author Benjamin Gulliver (fatherbeno)
      * @private

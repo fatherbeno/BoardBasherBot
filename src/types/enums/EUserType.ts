@@ -1,5 +1,7 @@
 /**
  * A list of the different types of user possible on the guild.
+ * Different user types grant different roles based on what has been set.
+ * @author Benjamin Gulliver (fatherbeno)
  */
 export enum EUserType {
     CrewCoordinator = "CREW_COORDINATOR",
@@ -12,5 +14,7 @@ export enum EUserType {
     CurrentMaidCrew = "CURRENT_MAID_CREW",
     CurrentCrew = "CURRENT_CREW",
     MaidCrew = "MAID_CREW",
-    Crew = "CREW"
+    Crew = "CREW",
+
+    Error = "ERROR"
 }

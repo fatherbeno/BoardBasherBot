@@ -15,7 +15,7 @@ export class CGlobalProperties {
                 // bot channels data
                 botReplyChannelID?: string, botVerificationChannelID?: string,
                 botWelcomeChannelID?: string, botVerifyLogsID?: string, botErrorLogsID?: string,
-                countdownChannelID?: string) {
+                countdownChannelID?: string, botGeneralLogsID?: string,) {
 
         if (replyOperationPrefix) this.ReplyOperationPrefix = replyOperationPrefix;
         if (commandErrorMessage) this.CommandErrorMessage = commandErrorMessage;
@@ -33,6 +33,7 @@ export class CGlobalProperties {
         if (botVerifyLogsID) this.BotVerifyLogsChannel = botVerifyLogsID;
         if (botErrorLogsID) this.BotErrorLogsChannel = botErrorLogsID;
         if (countdownChannelID) this.CountdownChannel = countdownChannelID;
+        if (botGeneralLogsID) this.BotGeneralLogsChannel = botGeneralLogsID;
     }
 
     /* -------------------- BOT INTEGRATION STUFF -------------------- */
@@ -401,6 +402,33 @@ export class CGlobalProperties {
             this._countdownChannelID = channel;
         } else {
             this._countdownChannelID = channel.id;
+        }
+    }
+
+    /**
+     * Channel that the bot send a log message for a general purpose.
+     * @private
+     * @privateRemarks If no channel ID property has been set then the bot will fail.
+     */
+    private _botGeneralLogsChannelID: string = "";
+
+    /**
+     * Channel that the bot send a log message for a general purpose.
+     * @return Global properties' set bot general logs channel.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public get BotGeneralLogsChannel(): string { return this._botGeneralLogsChannelID; }
+
+    /**
+     * Channel that the bot send a log message for a general purpose.
+     * @param channel Member input channel that then the ID is saved.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public set BotGeneralLogsChannel(channel: CategoryChannel | Channel | string) {
+        if (typeof channel === "string") {
+            this._botGeneralLogsChannelID = channel;
+        } else {
+            this._botGeneralLogsChannelID = channel.id;
         }
     }
 }

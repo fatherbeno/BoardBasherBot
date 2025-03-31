@@ -8,7 +8,8 @@ const {
   PUBLIC_KEY,
   GUILD_ID,
   DIRECT_MESSAGE_CHANNEL,
-  GOOGLE_SHEET_ID,
+  CREW_GOOGLE_SHEET_ID,
+  STAFF_GOOGLE_SHEET_ID
 } = process.env;
 
 if (
@@ -17,7 +18,8 @@ if (
   !PUBLIC_KEY ||
   !GUILD_ID ||
   !DIRECT_MESSAGE_CHANNEL ||
-  !GOOGLE_SHEET_ID
+  !CREW_GOOGLE_SHEET_ID ||
+  !STAFF_GOOGLE_SHEET_ID
   )
 {
   throw new Error("Missing environment variables");
@@ -29,7 +31,8 @@ const config: Record<string, string> = {
   PUBLIC_KEY,
   GUILD_ID,
   DIRECT_MESSAGE_CHANNEL,
-  GOOGLE_SHEET_ID,
+  CREW_GOOGLE_SHEET_ID,
+  STAFF_GOOGLE_SHEET_ID
 };
 
 export default config;

@@ -4,6 +4,7 @@ import {getSheet} from "../google-sheet";
 import {IUpdateDataInput} from "../types/interfaces/IUpdateDataInput";
 import {getLogger} from "../logging-config";
 import {ELoggerCategory} from "../types/enums/ELoggerCategory";
+import {ESheetType} from "../types/enums/ESheetType";
 
 export class CGoogleSheetsHelper<Type extends TRowData> {
 
@@ -14,11 +15,12 @@ export class CGoogleSheetsHelper<Type extends TRowData> {
     /**
      * Attempts to find a single row on a Google sheet using a filter made using a callback function.
      * Throws an error if one single result was not found.
+     * @param whichSheet Which sheet to find a row from (either Crew sheet or Staff sheet).
      * @param filter The callback function used for the filter.
      * @author Benjamin Gulliver (fatherbeno)
      */
-    public async findRow(filter: (value: GoogleSpreadsheetRow<Type>, index: number, array: GoogleSpreadsheetRow<TRowData>[]) => boolean): Promise<GoogleSpreadsheetRow<Type>> {
-        const data = await getSheet();
+    public async findRow(whichSheet: ESheetType, filter: (value: GoogleSpreadsheetRow<Type>, index: number, array: GoogleSpreadsheetRow<TRowData>[]) => boolean): Promise<GoogleSpreadsheetRow<Type>> {
+        const data = await getSheet(whichSheet);
         const rows = await data.getRows<Type>();
 
         this.googleLogger.debug("Attempting to filter rows for a single result.");

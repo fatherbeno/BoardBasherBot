@@ -5,6 +5,8 @@ import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 import { EUserType } from "../types/enums/EUserType";
 import { Client, Role, Guild} from "discord.js";
 import config from "../config"
+import { areArraysEqual } from "./OtherUtilitiesHelper";
+import { CommonConstants } from "./CCommonConstantsHelper";
 
 /**
  * Helper class tasked with handling all things user type roles.
@@ -133,7 +135,39 @@ export class CUserTypeRolesHelper {
         this.logger.debug(`User type: ${userType} successfully now has the roles: ${roles}.`);
     }
 
-    private convertStringToEUserType(input: string): EUserType {
+    /**
+     * Converts a string to a usable user type enum.
+     * @param input String to convert.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public convertStringToEUserType(input: string): EUserType {
         return (Object.values(EUserType) as string[]).includes(input) ? (input as EUserType) : EUserType[input as keyof typeof EUserType];
+    }
+
+    /**
+     * Using the inputted roles, it will try to find a user type which has the same roles stored in it.
+     * @param roles Input roles to compare with a stored user type's roles.
+     * @return Gets a user type that has the same matching roles as the inputted types, returns the ERROR user type if a match was not found.
+     * @author Benjamin Gulliver (fatherbeno)
+     */
+    public getUserTypeBasedOnRoles(roles: Role[]): EUserType {
+        let foundUserType = EUserType.Error;
+        let sortedUserTypeRoles: string[];
+
+        // remove @everyone role from list of roles inputted
+        const roleIDS: string[] = [];
+        roles.forEach((role) => {
+            if (role.name !== CommonConstants.EveryoneRole)
+            roleIDS.push(role.id);
+        });
+
+        // compare inputted roles with stored roles on a user type, return user type if they are equal
+        this._userTypeRoles.forEach((userTypeRoles, key) => {
+            sortedUserTypeRoles = userTypeRoles.sort()
+
+            if (areArraysEqual<string>(roleIDS.sort(), sortedUserTypeRoles)) foundUserType = key;
+        })
+
+        return foundUserType;
     }
 }

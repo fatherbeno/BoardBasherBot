@@ -4,7 +4,7 @@ import { EFileTypeCategory } from "../types/enums/EFileTypeCategory";
 import { getLogger} from "../logging-config";
 import { ELoggerCategory } from "../types/enums/ELoggerCategory";
 import { ICommandPropertiesWriter } from "../types/interfaces/ICommandPropertiesWriter";
-import {ChatInputCommandInteraction} from "discord.js";
+import { CommonConstants } from "./CCommonConstantsHelper";
 
 /**
  * Helper class tasked with handling all things command properties.
@@ -67,7 +67,7 @@ export class CCommandPropertiesHelper {
 
         const propertyKey = property as keyof typeof commandProperty;
 
-        if (property !== "Ephemeral") {
+        if (property !== CommonConstants.Ephemeral) {
             (commandProperty[propertyKey] as string) = value;
         } else {
             (commandProperty[propertyKey] as boolean) = JSON.parse(value);
