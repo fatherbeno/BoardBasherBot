@@ -8,6 +8,7 @@ import { GlobalProperties, UserTypeRoles } from "../helpers/.helpers";
 import { ESheetType } from "../types/enums/ESheetType";
 import { getColourBasedOnUserType, getUserTypeDisplayName } from "../helpers/OtherUtilitiesHelper";
 import { CommonConstants } from "../helpers/CCommonConstantsHelper";
+import { setUserType } from "./setusertype";
 
 export const data = new SlashCommandBuilder()
     .setName("verify")
@@ -41,13 +42,14 @@ export const execute = async (cmdHelper: CCommandHelper) => {
         // checking to see if the type data is not an error
         if (foundData.type === EUserType.Error) throw new Error("Found data in 'type' was not an acceptable value, please fix this member's data.")
 
-        // get roles to add to user from json file, and throw an error if there are no roles
+        // get roles to check the amount of roles associated with the found user type is not zero, throw an errow if so
         const roles = await UserTypeRoles.getRoles(foundData.type);
-        if (roles.length === 0) throw new Error("No roles have been added to the verify roles, please add at least one role first.");
+        if (roles.length === 0) throw new Error(`No roles have been added to the ${foundData.type} user type, please add at least one role first.`);
 
         // get the guild member who used the command
         const member = cmdHelper.getCommandUserMember();
 
+        // update found data object
         foundData.verifiedDate = new Date().toLocaleString();
         foundData.discordID = cmdHelper.interaction.user.id;
 
@@ -62,12 +64,6 @@ export const execute = async (cmdHelper: CCommandHelper) => {
             await member.setNickname(`${foundData.firstName} ${foundData.lastName[0]}`);
         }
 
-        // finally add the role(s) to the user
-        // will change to use the setusertype command functionality instead
-        for (let role of roles) {
-            await member.roles.add(role);
-        }
-
         // send a welcome message
         const welcomeChannel = await cmdHelper.getTextChannel(GlobalProperties.getProperties().BotWelcomeChannel);
         await welcomeChannel.send({content: `Welcome ${member} to the SMASH! Crew Community.`});
@@ -75,6 +71,9 @@ export const execute = async (cmdHelper: CCommandHelper) => {
         // send a log message
         const logChannel = await cmdHelper.getTextChannel(GlobalProperties.getProperties().BotVerifyLogsChannel);
         await logChannel.send({embeds: [buildVerifyLogEmbed(member, foundData)]});
+
+        // finally add the role(s) to the member
+        await setUserType(member, member, foundData.type, logChannel)
     });
 }
 

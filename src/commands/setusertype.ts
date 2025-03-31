@@ -1,4 +1,4 @@
-import { EmbedBuilder, GuildMember, SlashCommandBuilder } from "discord.js";
+import { EmbedBuilder, GuildMember, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CCommandHelper } from "../helpers/CCommandHelper";
 import { GlobalProperties, UserTypeRoles } from "../helpers/.helpers";
 import { getColourBasedOnUserType, getUserTypeDisplayName } from "../helpers/OtherUtilitiesHelper";
@@ -25,42 +25,56 @@ export const data = new SlashCommandBuilder()
 export const execute = async (cmdHelper: CCommandHelper) => {
     await cmdHelper.executeCommand(async () => {
         await cmdHelper.deferReply()
-        await setUserType(cmdHelper);
+
+        // gets the guild member whose roles are to be changed
+        const memberID = cmdHelper.getStringValue("member");
+        const affectedMember = <GuildMember>await cmdHelper.getGuildMembers(memberID);
+
+        // get member who used the command
+        const userMember = cmdHelper.getCommandUserMember();
+
+        // get selected user type
+        const userType = UserTypeRoles.convertStringToEUserType(cmdHelper.getStringValue("usertype"));
+
+        // get the general logs channel
+        const logChannel = await cmdHelper.getTextChannel(GlobalProperties.getProperties().BotGeneralLogsChannel);
+
+        // execute command functionality
+        await setUserType(affectedMember, userMember, userType, logChannel);
     });
 }
 
 /**
- * The functionality on this command has been extracted for use in the /verify command
- * @param cmdHelper The generated CCommandHelper object when the command was executed.
+ * The functionality on this command has been extracted for use in the /verify command.
+ * Sets a member's roles based on the inputted user type and sends a log message to the inputted channel.
+ * @param affectedMember Member to change their roles.
+ * @param userMember Member who used the command.
+ * @param userType The user type to get the roles to assign to the affected user.
+ * @param logChannel The channel to log the success message to.
  * @author Benjamin Gulliver (fatherbeno)
  */
-export const setUserType = async (cmdHelper: CCommandHelper) => {
-    // gets the guild member whose roles are to be changed
-    const memberID = cmdHelper.getStringValue("member");
-    const member = <GuildMember>await cmdHelper.getGuildMembers(memberID);
-
-    // gets the user type, and its corresponding roles
-    const userType = UserTypeRoles.convertStringToEUserType(cmdHelper.getStringValue("usertype"))
+export const setUserType = async (affectedMember: GuildMember, userMember: GuildMember, userType: EUserType, logChannel: TextChannel) => {
+    // gets the user types corresponding roles
     const roles = await UserTypeRoles.getRoles(userType);
 
-    // logs the role change to the general logs channel
-    const logChannel = await cmdHelper.getTextChannel(GlobalProperties.getProperties().BotGeneralLogsChannel);
-    await logChannel.send({embeds: [buildSetUserTypeEmbed(member, cmdHelper, userType)]});
+    // throw error if no roles have been added to specified user type
+    if (roles.length === 0) throw new Error(`No roles have been added to the ${userType} user type, please add at least one role first.`);
+
+    // logs the role change to a channel
+    await logChannel.send({embeds: [buildSetUserTypeEmbed(affectedMember, userMember, userType)]});
 
     // sets the member's roles based on the roles stored on the particular user type
-    await member.roles.set(roles)
+    await affectedMember.roles.set(roles)
 }
 
 /**
  * Builds an embed based on the input data and the member's discord data.
  * @param affectedMember The member whose roles are to be changed.
- * @param cmdHelper Generated CCommandHelper data when command was executed.
+ * @param userMember The member who used the command.
  * @param userType Inputted user type when command was executed.
  * @author Benjamin Gulliver (fatherbeno)
  */
-const buildSetUserTypeEmbed = (affectedMember: GuildMember, cmdHelper: CCommandHelper, userType: EUserType): EmbedBuilder => {
-    // get member who used command
-    const userMember = cmdHelper.getCommandUserMember()
+const buildSetUserTypeEmbed = (affectedMember: GuildMember, userMember: GuildMember, userType: EUserType): EmbedBuilder => {
     // gets a display name for the found EUserType.
     const newUserTypeDisplay = getUserTypeDisplayName(userType);
 
