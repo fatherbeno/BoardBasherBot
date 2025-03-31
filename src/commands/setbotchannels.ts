@@ -16,6 +16,7 @@ export const data = new SlashCommandBuilder()
                 { name: "bot welcome channel", value: "BotWelcomeChannel" },
                 { name: "bot verify logs channel", value: "BotVerifyLogsChannel" },
                 { name: "bot error logs channel", value: "BotErrorLogsChannel" },
+                { name: "bot general logs channel", value: "BotGeneralLogsChannel" },
                 { name: "countdown channel", value: "CountdownChannel" },
             )
     })
