@@ -1,5 +1,5 @@
 import config from './config'
-import * as botsheets from '../boardbasherbot-googleauth.json'
+import * as botsheets from '../skadibot-googleauth.json'
 import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 import { getLogger } from "./logging-config";
