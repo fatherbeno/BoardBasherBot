@@ -16,9 +16,16 @@ const twentyNineMinutes = CommonConstants.OneMinute*29;
  * @param client Inputted client when bot started.
  * @author Benjamin Gulliver (fatherbeno)
  */
-export const launchIntervalEvents = (client: Client) => {
+export const launchIntervalEvents = async (client: Client) => {
     logger.info("Launching interval events.");
 
+    // delay launching events to make sure everything is loaded
+    await new Promise(f => setTimeout(f, CommonConstants.OneSecond));
+
+    // trigger event on launch
+    await channelCountdownEvent(client);
+
+    // trigger event on every interval
     setInterval(async function() {
         await channelCountdownEvent(client);
     }, twentyNineMinutes);
@@ -63,7 +70,7 @@ const channelCountdownEvent = async (client: Client) => {
         // if the countdown message has changed, we set the channel name to the new channel message
         if (!countdownMessage || message !== countdownMessage || countdownChannel.name !== countdownMessage) {
             countdownMessage = message;
-            countdownChannel.setName(countdownMessage).then();
+            await countdownChannel.setName(countdownMessage);
             logger.debug(`Successfully updated the countdown with the message ${countdownMessage}.`);
         }
     } catch (error) {

@@ -21,9 +21,9 @@ export const client: Client = new Client({ intents: [
     Partials.Channel, Partials.Message
 ]});
 
-client.once("ready", () => {
-    events.intervalEvents.launchIntervalEvents(client);
+client.once("ready", async () => {
     initHelpers(client);
+    await events.intervalEvents.launchIntervalEvents(client);
 
     logger.debug("Bot Online: Time for some epic bot functionality :)");
 });
