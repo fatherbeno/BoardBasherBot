@@ -157,7 +157,7 @@ export class CGlobalProperties {
     /* -------------------- COUNTDOWN COMMAND STUFF -------------------- */
 
     /**
-     * The below values are all set using the /setcountdownproperties command.
+     * The below values are all set using the /setcountdownproperty command.
      */
 
     /**

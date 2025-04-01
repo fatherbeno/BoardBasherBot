@@ -7,7 +7,7 @@ import * as setcmdproperty from "./setcmdproperty";
 import * as setusertyperoles from "./setusertyperoles";
 import * as setglobalproperty from "./setglobalproperty"
 import * as setbotchannels from "./setbotchannels"
-import * as setcountdownproperties from "./setcountdownproperties"
+import * as setcountdownproperty from "./setcountdownproperty"
 import * as setusertype from "./setusertype"
 
 export const commands = {
@@ -20,6 +20,6 @@ export const commands = {
     setusertyperoles,
     setglobalproperty,
     setbotchannels,
-    setcountdownproperties,
+    setcountdownproperty,
     setusertype,
 };

@@ -3,7 +3,7 @@ import { CCommandHelper } from "../helpers/CCommandHelper";
 import { GlobalProperties } from "../helpers/.helpers";
 
 export const data = new SlashCommandBuilder()
-    .setName("setcountdownproperties")
+    .setName("setcountdownproperty")
     .setDescription("Sets a property for the countdown!")
     .addStringOption((option) => {
         return option
