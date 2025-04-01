@@ -7,7 +7,7 @@ export const data = new SlashCommandBuilder()
     .setDescription("Sets a property for the countdown!")
     .addStringOption((option) => {
         return option
-            .setName("countdownoption")
+            .setName("countdownproperty")
             .setDescription("Which property to set.")
             .setRequired(true)
             .addChoices(
@@ -25,6 +25,6 @@ export const data = new SlashCommandBuilder()
 
 export const execute = async (cmdHelper: CCommandHelper) => {
     return await cmdHelper.executeCommand(async () => {
-        await GlobalProperties.setProperties(cmdHelper.getStringValue("countdownoption"), cmdHelper.getStringValue("value"));
+        await GlobalProperties.setProperties(cmdHelper.getStringValue("countdownproperty"), cmdHelper.getStringValue("value"));
     });
 };
