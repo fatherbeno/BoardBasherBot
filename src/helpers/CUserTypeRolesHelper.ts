@@ -76,7 +76,7 @@ export class CUserTypeRolesHelper {
             }
         }
 
-        return userTypeRoles;
+        return this.sortRolesByPosition(userTypeRoles);
     }
 
     /**
@@ -100,39 +100,40 @@ export class CUserTypeRolesHelper {
     /**
      * Removes a role to a specific user type and saves it to a file.
      * @param inUserType Name of user type to remove the roles for.
-     * @param role Role to save to user type.
+     * @param inRole Role to remove from user type.
      * @author Benjamin Gulliver (fatherbeno)
      */
-    public async removeRole(inUserType: string, role: Role) {
+    public async removeRole(inUserType: string, inRole: Role) {
         const userType = this.convertStringToEUserType(inUserType);
-        const userTypeRoles = await this.getRoles(userType);
-        const roleIndex = userTypeRoles.indexOf(role)
+        let userTypeRoles = await this.getRoles(userType);
+        const roleIndex = userTypeRoles.indexOf(inRole)
 
         if (roleIndex < 0) throw new Error("Role is not present, no need to try and remove it.");
-        else if (roleIndex > 0) userTypeRoles.splice(roleIndex, roleIndex);
-        else if (roleIndex === 0) userTypeRoles.shift();
+        else if (roleIndex >= 0) userTypeRoles = userTypeRoles.filter((role) => { return inRole !== role });
 
         await this.saveRoles(userType, userTypeRoles);
     }
 
     /**
      * Add a role on a user type in runtime and saves it to a json file (also reloads current properties).
+     * Also sorts the roles to save them in order of highest position first.
      * @param userType Name of user type to set the property for.
      * @param roles Value of the roles to change for the user type.
      * @author Benjamin Gulliver (fatherbeno)
      * @private
      */
     private async saveRoles(userType: EUserType, roles: Role[]) {
-        this.logger.debug(`Attempting to change user type: ${userType} with roles: ${roles}.`);
+        this.logger.debug(`Attempting to change user type: ${userType} with roles:${roles.map((role) => { return " " + role.name; })}.`);
 
         const allUserTypesRoles = await this.loadUserTypesRoles();
+        const sortedRoles = this.sortRolesByPosition(roles);
 
-        allUserTypesRoles.set(userType, roles.map((role) => { return role.id }))
+        allUserTypesRoles.set(userType, sortedRoles.map((role) => { return role.id; }))
 
         await FileSystem.writeFile(EFileTypeCategory.UserTypeRoles, Object.fromEntries(allUserTypesRoles));
         await this.loadUserTypesRoles();
 
-        this.logger.debug(`User type: ${userType} successfully now has the roles: ${roles}.`);
+        this.logger.debug(`User type: ${userType} successfully now has the roles:${sortedRoles.map((role) => { return " " + role.name; })}.`);
     }
 
     /**
@@ -152,22 +153,33 @@ export class CUserTypeRolesHelper {
      */
     public getUserTypeBasedOnRoles(roles: Role[]): EUserType {
         let foundUserType = EUserType.Error;
-        let sortedUserTypeRoles: string[];
+        const sortedRoles = this.sortRolesByPosition(roles);
 
-        // remove @everyone role from list of roles inputted
-        const roleIDS: string[] = [];
-        roles.forEach((role) => {
-            if (role.name !== CommonConstants.EveryoneRole)
-            roleIDS.push(role.id);
+
+        // converts sorted array into role ids
+        const sortedRoleIDS: string[] = sortedRoles.map((role) => {
+            return role.id
         });
 
-        // compare inputted roles with stored roles on a user type, return user type if they are equal
-        this._userTypeRoles.forEach((userTypeRoles, key) => {
-            sortedUserTypeRoles = userTypeRoles.sort()
-
-            if (areArraysEqual<string>(roleIDS.sort(), sortedUserTypeRoles)) foundUserType = key;
+        // compare inputted roles with stored roles on a user type, return user type if highest position role are the same on both lists
+        this._userTypeRoles.forEach((userTypeRoleIDs, key) => {
+            // userTypeRoleIDs are saved in sorted order, so no need to sort again
+            if (userTypeRoleIDs[0] === sortedRoleIDS[0]) foundUserType = key;
         })
 
         return foundUserType;
+    }
+
+    /**
+     * Sorts the roles array by position, higher position comes first, lower position comes last
+     * @param roles Input roles list to output a sorted copy.
+     * @author Benjamin Gulliver (fatherbeno)
+     * @private
+     */
+    private sortRolesByPosition(roles: Role[]): Role[] {
+        roles.sort((roleA, roleB) => {
+            return roleB.position - roleA.position;
+        });
+        return roles;
     }
 }
